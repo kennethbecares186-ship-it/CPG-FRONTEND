@@ -30,7 +30,7 @@ public class MainCode extends JFrame {
         add(mainContainer);
         setVisible(true);
     }
-//hello
+
     private JPanel createAuthPanel(String type) {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -74,12 +74,10 @@ public class MainCode extends JFrame {
                 return;
             }
 
-            // SIMULATED AUTH LOGIC: 
-            // If username contains "admin", log in as Admin. Otherwise, Customer.
+            // SIMULATED AUTH LOGIC
             String role = name.toLowerCase().contains("admin") ? "ADMIN" : "CUSTOMER";
             User sessionUser = new User(name, role);
 
-            // Launch Home Page and close Login
             new HomePage(sessionUser);
             this.dispose();
         });
@@ -88,30 +86,29 @@ public class MainCode extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Run on Event Dispatch Thread for thread-safety
         SwingUtilities.invokeLater(MainCode::new);
     }
-    
 }
 
 // --- Dynamic Home Page Window ---
 class HomePage extends JFrame {
+    private User user; // FIX: Added field to store user session
 
     Color PRIMARY = new Color(186, 55, 78);
     Color LIGHT_BG = new Color(248, 240, 240);
     Color CARD = Color.WHITE;
     Color SIDEBAR = new Color(120, 25, 45);
 
-     public HomePage(User user) {
+    public HomePage(User user) {
+        this.user = user; // FIX: Initialize user session
         setTitle("MoveEat - " + user.role);
         setSize(1200, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-
         getContentPane().setBackground(LIGHT_BG);
 
-         // ================= SIDEBAR =================
+        // ================= SIDEBAR =================
         JPanel sidebar = new JPanel();
         sidebar.setPreferredSize(new Dimension(220, 700));
         sidebar.setBackground(SIDEBAR);
@@ -128,7 +125,6 @@ class HomePage extends JFrame {
 
         addNavButton(sidebar, "Dashboard");
 
-
         if (user.role.equals("ADMIN")) {
             addNavButton(sidebar, "Manage Deliveries");
             addNavButton(sidebar, "Fleet Tracking");
@@ -143,7 +139,7 @@ class HomePage extends JFrame {
         sidebar.add(Box.createVerticalGlue());
         addNavButton(sidebar, "Logout");
 
-         // ================= MAIN AREA =================
+        // ================= MAIN AREA =================
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(LIGHT_BG);
 
@@ -164,7 +160,6 @@ class HomePage extends JFrame {
         textPanel.setBackground(LIGHT_BG);
         textPanel.add(welcome);
         textPanel.add(subtitle);
-
 
         JTextField searchBar = new JTextField(" Search...");
         searchBar.setPreferredSize(new Dimension(220, 40));
@@ -194,7 +189,7 @@ class HomePage extends JFrame {
         heroTitle.setForeground(Color.WHITE);
         heroTitle.setFont(new Font("SansSerif", Font.BOLD, 32));
 
-         JLabel heroDesc = new JLabel("Track orders and manage deliveries in real-time.");
+        JLabel heroDesc = new JLabel("Track orders and manage deliveries in real-time.");
         heroDesc.setForeground(Color.WHITE);
         heroDesc.setFont(new Font("SansSerif", Font.PLAIN, 16));
 
@@ -211,25 +206,24 @@ class HomePage extends JFrame {
         heroText.add(heroBtn);
 
         heroCard.add(heroText, BorderLayout.WEST);
-
         content.add(heroCard);
         content.add(Box.createRigidArea(new Dimension(0, 25)));
 
         // ================= STATS CARDS =================
-if (user.role.equals("ADMIN")) {
+        if (user.role.equals("ADMIN")) {
+            JPanel statsPanel = new JPanel(new GridLayout(1, 3, 20, 20));
+            statsPanel.setBackground(LIGHT_BG);
+            statsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 130));
 
-    JPanel statsPanel = new JPanel(new GridLayout(1, 3, 20, 20));
-    statsPanel.setBackground(LIGHT_BG);
-    statsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 130));
+            statsPanel.add(createStatCard("128", "Active Orders"));
+            statsPanel.add(createStatCard("34", "Drivers Online"));
+            statsPanel.add(createStatCard("96%", "Success Rate"));
 
-    statsPanel.add(createStatCard("128", "Active Orders"));
-    statsPanel.add(createStatCard("34", "Drivers Online"));
-    statsPanel.add(createStatCard("96%", "Success Rate"));
+            content.add(statsPanel);
+            content.add(Box.createRigidArea(new Dimension(0, 25)));
+        }
 
-    content.add(statsPanel);
-    content.add(Box.createRigidArea(new Dimension(0, 25)));
-}
-         // ================= TABLE CARD =================
+        // ================= TABLE CARD =================
         JPanel tableCard = new RoundedPanel(25);
         tableCard.setLayout(new BorderLayout());
         tableCard.setBackground(CARD);
@@ -240,7 +234,6 @@ if (user.role.equals("ADMIN")) {
 
         String[] columns = {"Order ID", "Address", "Status", "Driver"};
         Object[][] data;
-
 
         if (user.role.equals("ADMIN")) {
             data = new Object[][]{
@@ -254,7 +247,7 @@ if (user.role.equals("ADMIN")) {
             };
         }
 
-         JTable table = new JTable(data, columns);
+        JTable table = new JTable(data, columns);
         table.setRowHeight(35);
         table.setFont(new Font("SansSerif", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -278,12 +271,10 @@ if (user.role.equals("ADMIN")) {
         setVisible(true);
     }
 
-     // ================= NAV BUTTON =================
     private void addNavButton(JPanel panel, String text) {
         JButton btn = new JButton(text);
         btn.setMaximumSize(new Dimension(200, 50));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         btn.setBackground(Color.WHITE);
         btn.setForeground(new Color(80, 80, 80));
         btn.setFocusPainted(false);
@@ -293,18 +284,22 @@ if (user.role.equals("ADMIN")) {
         if (text.equals("Logout")) {
             btn.setBackground(new Color(255, 230, 230));
             btn.setForeground(Color.RED);
-
             btn.addActionListener(e -> {
                 new MainCode();
                 this.dispose();
             });
+        } else if (text.equals("Store List")) {
+            btn.addActionListener(e -> {
+                // FIX: Successfully references this.user
+                new StoreList(this.user).setVisible(true);
+                this.dispose();
+            });
         }
 
-          panel.add(btn);
+        panel.add(btn);
         panel.add(Box.createRigidArea(new Dimension(0, 15)));
     }
 
-     // ================= STAT CARD =================
     private JPanel createStatCard(String number, String label) {
         JPanel card = new RoundedPanel(25);
         card.setBackground(CARD);
@@ -338,15 +333,10 @@ class RoundedPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-
         Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(getBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
-
         g2.dispose();
     }
 }
-
