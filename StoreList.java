@@ -215,13 +215,13 @@ public class StoreList extends JFrame {
             foodPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
 
             if (restaurant.equals("Jollibee")) {
-                foodPanel.add(createFoodCard("Chickenjoy", "https://toppng.com/free-image/chicken-bucket-by-jollibee-jollibee-bucket-meal-2015-PNG-free-PNG-Images_172294", "₱99")); // Image from page
-                foodPanel.add(createFoodCard("Jolly Spaghetti", "https://www.chowhound.com/img/gallery/authentic-copycat-jollibees-need-sauce/l-intro-1663851423.jpg", "₱79")); // Image from Chowhound
-                foodPanel.add(createFoodCard("Burger Steak", "https://scontent.fmnl3-1.fna.fbcdn.net/v/t39.30808-6/2467291557983722_2487291557983722.jpg?_nc_cat=1&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=example&_nc_oc=example&_nc_ht=scontent.fmnl3-1.fna&oh=00_AfBexample&oe=example", "₱89")); // Image from Facebook post (placeholder URL)
+                foodPanel.add(createFoodCard("Chickenjoy", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVSs2VmuBtUQYNPdT_SEMCq5snDSKig8y2nA&s", "₱99")); // Image from page
+                foodPanel.add(createFoodCard("Jolly Spaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJOmN-B_Fiq1bx1leYjBNGkhLZ_S-IYSBmkQ&s", "₱79")); // Image from Chowhound
+                foodPanel.add(createFoodCard("Burger Steak", "https://www.jollibeefoods.com/_next/image?url=https%3A%2F%2Folo-images-live.imgix.net%2F02%2F023d7994bd1e46a2aac95c11c1833a73.jpg%3Fauto%3Dformat%252Ccompress%26q%3D60%26cs%3Dtinysrgb%26w%3D1200%26h%3D800%26fit%3Dfill%26fm%3Dpng32%26bg%3Dtransparent%26s%3D966c5b696ebf78b634eee98ce089c190&w=1920&q=75", "₱89")); // Image from Facebook post (placeholder URL)
             } else if (restaurant.equals("McDo")) {
-                foodPanel.add(createFoodCard("Big Mac", "https://topsecretrecipes.com/wp-content/uploads/2018/09/mcdonalds-big-mac-copycat-recipe.jpg", "₱149")); // Image from TSR
-                foodPanel.add(createFoodCard("McSpaghetti", "https://pbs.twimg.com/media/A9zN1jJCAAAJTgL.jpg", "₱59")); // Image from Twitter
-                foodPanel.add(createFoodCard("Fries", "https://pinoycupidgifts.com/wp-content/uploads/2020/05/Large-Fries-McDo.jpg", "₱49")); // Image from PinoyCupid
+                foodPanel.add(createFoodCard("Big Mac", "https://s7d1.scene7.com/is/image/mcdonalds/DC_202302_0005-999_BigMac_1564x1564-1:product-header-mobile?wid=1313&hei=1313&dpr=off", "₱149")); // Image from TSR
+                foodPanel.add(createFoodCard("McSpaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZRLGmYoD9kfyt10_KoCSymY9M7V2lnxh-Jg&s", "₱59")); // Image from Twitter
+                foodPanel.add(createFoodCard("Fries", "https://s7d1.scene7.com/is/image/mcdonalds/mcdonalds-fries-medium:1-3-product-tile-desktop?wid=829&hei=515&dpr=off", "₱49")); // Image from PinoyCupid
             }
 
             mainPanel.add(foodPanel, BorderLayout.CENTER);
