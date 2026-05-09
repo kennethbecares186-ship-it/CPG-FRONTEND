@@ -279,6 +279,6 @@ public class StoreList extends JFrame {
     // Main method for testing
     public static void main(String[] args) {
         // For testing, pass a dummy user
-        SwingUtilities.invokeLater(() -> new StoreList(new User("TestUser", "CUSTOMER")).setVisible(true));
+        SwingUtilities.invokeLater(() -> new StoreList(new User("TestUser", "CUSTOMER", false)).setVisible(true));
     }
 }
