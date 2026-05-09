@@ -2,8 +2,6 @@ import java.awt.*;
 import java.net.URL;
 import javax.swing.*;
 
-// ... (rest of the code remains the same until the image loading sections)
-
 public class StoreList extends JFrame {
     // Colors and fonts from MainCode
     private final Color PRIMARY = new Color(186, 55, 78);
@@ -16,6 +14,9 @@ public class StoreList extends JFrame {
         this.user = user;
         setTitle("MoveEat - Store List");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize immediately
+
         setSize(1200, 700);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -79,9 +80,9 @@ public class StoreList extends JFrame {
         JButton jollibeeButton = new JButton("Jollibee");
         jollibeeButton.setFont(new Font("SansSerif", Font.BOLD, 18));
         try {
-            URL url = new URL("https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg"); // Direct image from Wikipedia page
+            URL url = new URL("https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg"); // Derived direct image from Flickr link
             ImageIcon jollibeeIcon = new ImageIcon(url);
-            jollibeeButton.setIcon(new ImageIcon(jollibeeIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
+            jollibeeButton.setIcon(new ImageIcon(jollibeeIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))); // Increased from 80x80 to 100x100
         } catch (Exception e) {
             jollibeeButton.setText("Logo Not Found");
         }
@@ -93,9 +94,9 @@ public class StoreList extends JFrame {
         JButton mcdoButton = new JButton("McDo");
         mcdoButton.setFont(new Font("SansSerif", Font.BOLD, 18));
         try {
-            URL url = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png"); // Direct image from PNG site
+            URL url = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png"); // Direct from URL
             ImageIcon mcdoIcon = new ImageIcon(url);
-            mcdoButton.setIcon(new ImageIcon(mcdoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
+            mcdoButton.setIcon(new ImageIcon(mcdoIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))); // Increased from 80x80 to 100x100
         } catch (Exception e) {
             mcdoButton.setText("Logo Not Found");
         }
@@ -144,6 +145,9 @@ public class StoreList extends JFrame {
         public RestaurantFrame(User user, String restaurant) {
             this.user = user;
             setTitle("MoveEat - " + restaurant + " Menu");
+
+            setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize immediately for restaurant frame
+
             setSize(1200, 700);
             setLocationRelativeTo(null);
             setLayout(new BorderLayout());
@@ -188,7 +192,7 @@ public class StoreList extends JFrame {
             try {
                 URL logoUrl = restaurant.equals("Jollibee") ? new URL("https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg") : new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
                 ImageIcon icon = new ImageIcon(logoUrl);
-                restLogo.setIcon(new ImageIcon(icon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)));
+                restLogo.setIcon(new ImageIcon(icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH))); // Increased from 60x60 to 80x80
             } catch (Exception e) {
                 restLogo.setText("Logo");
             }
@@ -215,13 +219,13 @@ public class StoreList extends JFrame {
             foodPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
 
             if (restaurant.equals("Jollibee")) {
-                foodPanel.add(createFoodCard("Chickenjoy", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVSs2VmuBtUQYNPdT_SEMCq5snDSKig8y2nA&s", "₱99")); // Image from page
-                foodPanel.add(createFoodCard("Jolly Spaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJOmN-B_Fiq1bx1leYjBNGkhLZ_S-IYSBmkQ&s", "₱79")); // Image from Chowhound
-                foodPanel.add(createFoodCard("Burger Steak", "https://www.jollibeefoods.com/_next/image?url=https%3A%2F%2Folo-images-live.imgix.net%2F02%2F023d7994bd1e46a2aac95c11c1833a73.jpg%3Fauto%3Dformat%252Ccompress%26q%3D60%26cs%3Dtinysrgb%26w%3D1200%26h%3D800%26fit%3Dfill%26fm%3Dpng32%26bg%3Dtransparent%26s%3D966c5b696ebf78b634eee98ce089c190&w=1920&q=75", "₱89")); // Image from Facebook post (placeholder URL)
+                foodPanel.add(createFoodCard("Chickenjoy", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVSs2VmuBtUQYNPdT_SEMCq5snDSKig8y2nA&s", "₱99")); // Placeholder; replace with direct Chickenjoy URL
+                foodPanel.add(createFoodCard("Jolly Spaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJOmN-B_Fiq1bx1leYjBNGkhLZ_S-IYSBmkQ&s", "₱79")); // Placeholder; replace with direct URL
+                foodPanel.add(createFoodCard("Burger Steak", "https://www.jollibeefoods.com/_next/image?url=https%3A%2F%2Folo-images-live.imgix.net%2F02%2F023d7994bd1e46a2aac95c11c1833a73.jpg%3Fauto%3Dformat%252Ccompress%26q%3D60%26cs%3Dtinysrgb%26w%3D1200%26h%3D800%26fit%3Dfill%26fm%3Dpng32%26bg%3Dtransparent%26s%3D966c5b696ebf78b634eee98ce089c190&w=1920&q=75", "₱89")); // Direct from PNGEgg
             } else if (restaurant.equals("McDo")) {
-                foodPanel.add(createFoodCard("Big Mac", "https://s7d1.scene7.com/is/image/mcdonalds/DC_202302_0005-999_BigMac_1564x1564-1:product-header-mobile?wid=1313&hei=1313&dpr=off", "₱149")); // Image from TSR
-                foodPanel.add(createFoodCard("McSpaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZRLGmYoD9kfyt10_KoCSymY9M7V2lnxh-Jg&s", "₱59")); // Image from Twitter
-                foodPanel.add(createFoodCard("Fries", "https://s7d1.scene7.com/is/image/mcdonalds/mcdonalds-fries-medium:1-3-product-tile-desktop?wid=829&hei=515&dpr=off", "₱49")); // Image from PinoyCupid
+                foodPanel.add(createFoodCard("Big Mac", "https://s7d1.scene7.com/is/image/mcdonalds/DC_202302_0005-999_BigMac_1564x1564-1:product-header-mobile?wid=1313&hei=1313&dpr=off", "₱149")); // Placeholder; replace with direct URL
+                foodPanel.add(createFoodCard("McSpaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZRLGmYoD9kfyt10_KoCSymY9M7V2lnxh-Jg&s", "₱59")); // Placeholder; replace with direct URL
+                foodPanel.add(createFoodCard("Fries", "https://s7d1.scene7.com/is/image/mcdonalds/mcdonalds-fries-medium:1-3-product-tile-desktop?wid=829&hei=515&dpr=off", "₱49")); // Placeholder; replace with direct URL
             }
 
             mainPanel.add(foodPanel, BorderLayout.CENTER);
@@ -249,7 +253,7 @@ public class StoreList extends JFrame {
             try {
                 URL url = new URL(imageUrl);
                 ImageIcon icon = new ImageIcon(url);
-                imageLabel.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
+                imageLabel.setIcon(new ImageIcon(icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH))); // Increased from 100x100 to 150x150
             } catch (Exception e) {
                 imageLabel.setText("Image Not Found");
             }

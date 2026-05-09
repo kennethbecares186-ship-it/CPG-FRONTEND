@@ -1,94 +1,210 @@
 import java.awt.*;
+import java.awt.event.ComponentListener;
+import java.awt.event.WindowStateListener;
 import javax.swing.*;
 
 // --- Data Model ---
 class User {
     String username;
     String role; // "ADMIN" or "CUSTOMER"
-    boolean isNewUser; // True if created via signup
 
-    User(String username, String role, boolean isNewUser) {
+    User(String username, String role) {
         this.username = username;
         this.role = role;
-        this.isNewUser = isNewUser;
     }
 }
 
-// --- Main Application Window ---
+// LOGINN
 public class MainCode extends JFrame {
+
     private CardLayout cardLayout = new CardLayout();
     private JPanel mainContainer = new JPanel(cardLayout);
 
-    // Theme colors matching HomePage
     Color PRIMARY = new Color(186, 55, 78);
     Color LIGHT_BG = new Color(248, 240, 240);
-    Color CARD = Color.WHITE;
-    Color SIDEBAR = new Color(120, 25, 45);
+    Color WHITE = Color.WHITE;
+    Color TEXT = new Color(70, 70, 70);
 
     public MainCode() {
+
         setTitle("MoveEat");
-        setSize(400, 500);
+
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize immediately
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Add Login and Sign-up panels to the container
         mainContainer.add(createAuthPanel("LOGIN"), "LOGIN_PAGE");
         mainContainer.add(createAuthPanel("SIGNUP"), "SIGNUP_PAGE");
 
         add(mainContainer);
+
+        // Force fullscreen (maximized) always, except when minimized
+        addComponentListener(new ComponentListener() {
+            @Override
+            public void componentResized(java.awt.event.ComponentEvent e) {
+                if ((getExtendedState() & JFrame.MAXIMIZED_BOTH) == 0) {
+                    setExtendedState(JFrame.MAXIMIZED_BOTH);
+                }
+            }
+
+            @Override
+            public void componentMoved(java.awt.event.ComponentEvent e) {}
+
+            @Override
+            public void componentShown(java.awt.event.ComponentEvent e) {}
+
+            @Override
+            public void componentHidden(java.awt.event.ComponentEvent e) {}
+        });
+
+        addWindowStateListener(new WindowStateListener() {
+            @Override
+            public void windowStateChanged(java.awt.event.WindowEvent e) {
+                if ((e.getNewState() & JFrame.ICONIFIED) == 0) { // Not minimized
+                    setExtendedState(JFrame.MAXIMIZED_BOTH);
+                }
+            }
+        });
+
         setVisible(true);
     }
 
     private JPanel createAuthPanel(String type) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(LIGHT_BG); // Match homepage background
+
+        // MAIN PANELL
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(LIGHT_BG);
+
+        JPanel leftPanel = new JPanel();
+        leftPanel.setBackground(PRIMARY);
+        leftPanel.setPreferredSize(new Dimension(700, 700));
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+
+        leftPanel.add(Box.createVerticalGlue());
+
+        JLabel appTitle = new JLabel("MoveEat");
+        appTitle.setForeground(Color.WHITE);
+        appTitle.setFont(new Font("SansSerif", Font.BOLD, 55));
+        appTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel subtitle = new JLabel("Fast Delivery & Food Ordering");
+        subtitle.setForeground(Color.WHITE);
+        subtitle.setFont(new Font("SansSerif", Font.PLAIN, 22));
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        leftPanel.add(appTitle);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        leftPanel.add(subtitle);
+
+        leftPanel.add(Box.createVerticalGlue());
+
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+        rightPanel.setBackground(LIGHT_BG);
+
+        // LOGINB CARD
+        JPanel formCard = new JPanel();
+        formCard.setPreferredSize(new Dimension(420, 500));
+        formCard.setBackground(WHITE);
+        formCard.setLayout(new GridBagLayout());
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(15, 15, 15, 15); // Increased padding for better spacing
+        gbc.insets = new Insets(12, 20, 12, 20);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Title
-        JLabel title = new JLabel(type.equals("LOGIN") ? "User Login" : "Register Account");
-        title.setFont(new Font("SansSerif", Font.BOLD, 24)); // Larger, matching homepage style
-        title.setForeground(PRIMARY); // Use PRIMARY color for title
-        gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
-        panel.add(title, gbc);
+        JLabel title = new JLabel(
+                type.equals("LOGIN") ? "Welcome Back" : "Create Account");
 
-        // Input Fields
+        title.setFont(new Font("SansSerif", Font.BOLD, 30));
+        title.setForeground(PRIMARY);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+
+        formCard.add(title, gbc);
+
+        JLabel smallText = new JLabel(
+                type.equals("LOGIN")
+                        ? "Login to continue"
+                        : "Sign up to get started");
+
+        smallText.setForeground(TEXT);
+
+        gbc.gridy = 1;
+        formCard.add(smallText, gbc);
+
         gbc.gridwidth = 1;
-        gbc.gridy = 1; panel.add(new JLabel("Username:"), gbc);
-        JTextField userField = new JTextField(15);
-        userField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        userField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-        gbc.gridx = 1; panel.add(userField, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 2; panel.add(new JLabel("Password:"), gbc);
-        JPasswordField passField = new JPasswordField(15);
-        passField.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        passField.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-        gbc.gridx = 1; panel.add(passField, gbc);
+        // USERNAME
+        gbc.gridx = 0;
+        gbc.gridy = 2;
 
-        // Buttons
-        JButton submitBtn = new JButton(type.equals("LOGIN") ? "Login" : "Create Account");
-        submitBtn.setBackground(PRIMARY); // PRIMARY background
+        JLabel userLabel = new JLabel("Username");
+        userLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
+
+        formCard.add(userLabel, gbc);
+
+        JTextField userField = new JTextField(18);
+        userField.setPreferredSize(new Dimension(250, 40));
+
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+
+        formCard.add(userField, gbc);
+
+        // PASSWORD
+        gbc.gridy = 4;
+        gbc.gridwidth = 1;
+
+        JLabel passLabel = new JLabel("Password");
+        passLabel.setFont(new Font("SansSerif", Font.BOLD, 15));
+
+        formCard.add(passLabel, gbc);
+
+        JPasswordField passField = new JPasswordField(18);
+        passField.setPreferredSize(new Dimension(250, 40));
+
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+
+        formCard.add(passField, gbc);
+
+        // BUTTON
+        JButton submitBtn = new JButton(
+                type.equals("LOGIN") ? "LOGIN" : "CREATE ACCOUNT");
+
+        submitBtn.setBackground(PRIMARY);
         submitBtn.setForeground(Color.WHITE);
-        submitBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
         submitBtn.setFocusPainted(false);
-        submitBtn.setBorder(BorderFactory.createEmptyBorder(12, 20, 12, 20));
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
-        panel.add(submitBtn, gbc);
+        submitBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
+        submitBtn.setPreferredSize(new Dimension(250, 45));
 
-        JButton switchBtn = new JButton(type.equals("LOGIN") ? "Need an account? Sign Up" : "Back to Login");
+        gbc.gridy = 6;
+        gbc.insets = new Insets(25, 20, 10, 20);
+
+        formCard.add(submitBtn, gbc);
+
+        // SWITCH BUTTON
+        JButton switchBtn = new JButton(
+                type.equals("LOGIN")
+                        ? "Need an account? Sign Up"
+                        : "Already have an account? Login");
+
         switchBtn.setBorderPainted(false);
         switchBtn.setContentAreaFilled(false);
-        switchBtn.setForeground(Color.GRAY);
+        switchBtn.setForeground(PRIMARY);
         switchBtn.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        switchBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        gbc.gridy = 4;
-        panel.add(switchBtn, gbc);
+
+        gbc.gridy = 7;
+        gbc.insets = new Insets(5, 20, 20, 20);
+
+        formCard.add(switchBtn, gbc);
+
+        rightPanel.add(formCard);
+
+        panel.add(leftPanel, BorderLayout.WEST);
+        panel.add(rightPanel, BorderLayout.CENTER);
 
         // Action Listeners
         switchBtn.addActionListener(e -> cardLayout.show(mainContainer, type.equals("LOGIN") ? "SIGNUP_PAGE" : "LOGIN_PAGE"));
@@ -102,8 +218,7 @@ public class MainCode extends JFrame {
 
             // SIMULATED AUTH LOGIC
             String role = name.toLowerCase().contains("admin") ? "ADMIN" : "CUSTOMER";
-            boolean isNewUser = type.equals("SIGNUP"); // True for signup
-            User sessionUser = new User(name, role, isNewUser);
+            User sessionUser = new User(name, role);
 
             new HomePage(sessionUser);
             this.dispose();
@@ -129,7 +244,9 @@ class HomePage extends JFrame {
     public HomePage(User user) {
         this.user = user; // FIX: Initialize user session
         setTitle("MoveEat - " + user.role);
-        setSize(1200, 700);
+
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize immediately for homepage
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -175,8 +292,7 @@ class HomePage extends JFrame {
         header.setBackground(LIGHT_BG);
         header.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        String greeting = user.isNewUser ? "Hello, " + user.username : "Welcome back, " + user.username; // Change based on signup
-        JLabel welcome = new JLabel(greeting);
+        JLabel welcome = new JLabel("Welcome back, " + user.username);
         welcome.setFont(new Font("SansSerif", Font.BOLD, 28));
 
         JLabel subtitle = new JLabel("Manage deliveries and orders easily");
