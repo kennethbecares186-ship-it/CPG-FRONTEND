@@ -7,10 +7,12 @@ import javax.swing.*;
 class User {
     String username;
     String role; // "ADMIN" or "CUSTOMER"
+    boolean isNewUser; // True if created via signup
 
-    User(String username, String role) {
+    User(String username, String role, boolean isNewUser) {
         this.username = username;
         this.role = role;
+        this.isNewUser = isNewUser;
     }
 }
 
@@ -218,7 +220,8 @@ public class MainCode extends JFrame {
 
             // SIMULATED AUTH LOGIC
             String role = name.toLowerCase().contains("admin") ? "ADMIN" : "CUSTOMER";
-            User sessionUser = new User(name, role);
+            boolean isNewUser = type.equals("SIGNUP"); // True for signup
+            User sessionUser = new User(name, role, isNewUser);
 
             new HomePage(sessionUser);
             this.dispose();
@@ -292,7 +295,8 @@ class HomePage extends JFrame {
         header.setBackground(LIGHT_BG);
         header.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        JLabel welcome = new JLabel("Welcome back, " + user.username);
+        String greeting = user.isNewUser ? "Hello, " + user.username : "Welcome back, " + user.username; // Change based on signup
+        JLabel welcome = new JLabel(greeting);
         welcome.setFont(new Font("SansSerif", Font.BOLD, 28));
 
         JLabel subtitle = new JLabel("Manage deliveries and orders easily");
