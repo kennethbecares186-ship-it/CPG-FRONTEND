@@ -30,7 +30,7 @@ public class MainCode extends JFrame {
         add(mainContainer);
         setVisible(true);
     }
-
+//hello
     private JPanel createAuthPanel(String type) {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
