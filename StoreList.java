@@ -1,5 +1,8 @@
 import java.awt.*;
+import java.net.URL;
 import javax.swing.*;
+
+// ... (rest of the code remains the same until the image loading sections)
 
 public class StoreList extends JFrame {
     // Colors and fonts from MainCode
@@ -76,9 +79,12 @@ public class StoreList extends JFrame {
         JButton jollibeeButton = new JButton("Jollibee");
         jollibeeButton.setFont(new Font("SansSerif", Font.BOLD, 18));
         try {
-            ImageIcon jollibeeIcon = new ImageIcon("GUIBuilder/resources/jollibee_logo.png");
+            URL url = new URL("https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg"); // Direct image from Wikipedia page
+            ImageIcon jollibeeIcon = new ImageIcon(url);
             jollibeeButton.setIcon(new ImageIcon(jollibeeIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            jollibeeButton.setText("Logo Not Found");
+        }
         jollibeeButton.setBackground(CARD);
         jollibeeButton.setFocusPainted(false);
         centerPanel.add(jollibeeButton);
@@ -87,9 +93,12 @@ public class StoreList extends JFrame {
         JButton mcdoButton = new JButton("McDo");
         mcdoButton.setFont(new Font("SansSerif", Font.BOLD, 18));
         try {
-            ImageIcon mcdoIcon = new ImageIcon("GUIBuilder/resources/mcdo_logo.png");
+            URL url = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png"); // Direct image from PNG site
+            ImageIcon mcdoIcon = new ImageIcon(url);
             mcdoButton.setIcon(new ImageIcon(mcdoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            mcdoButton.setText("Logo Not Found");
+        }
         mcdoButton.setBackground(CARD);
         mcdoButton.setFocusPainted(false);
         centerPanel.add(mcdoButton);
@@ -177,10 +186,12 @@ public class StoreList extends JFrame {
             leftHeader.setOpaque(false);
             JLabel restLogo = new JLabel();
             try {
-                String logoPath = restaurant.equals("Jollibee") ? "GUIBuilder/resources/jollibee_logo.png" : "GUIBuilder/resources/mcdo_logo.png";
-                ImageIcon icon = new ImageIcon(logoPath);
+                URL logoUrl = restaurant.equals("Jollibee") ? new URL("https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg") : new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
+                ImageIcon icon = new ImageIcon(logoUrl);
                 restLogo.setIcon(new ImageIcon(icon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)));
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                restLogo.setText("Logo");
+            }
             JLabel restName = new JLabel(restaurant + " Menu");
             restName.setFont(new Font("SansSerif", Font.BOLD, 28));
             leftHeader.add(restLogo);
@@ -204,13 +215,13 @@ public class StoreList extends JFrame {
             foodPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
 
             if (restaurant.equals("Jollibee")) {
-                foodPanel.add(createFoodCard("Chickenjoy", "GUIBuilder/resources/chickenjoy.png"));
-                foodPanel.add(createFoodCard("Jolly Spaghetti", "GUIBuilder/resources/jolly_spaghetti.png"));
-                foodPanel.add(createFoodCard("Burger Steak", "GUIBuilder/resources/burger_steak.png"));
+                foodPanel.add(createFoodCard("Chickenjoy", "https://toppng.com/free-image/chicken-bucket-by-jollibee-jollibee-bucket-meal-2015-PNG-free-PNG-Images_172294", "₱99")); // Image from page
+                foodPanel.add(createFoodCard("Jolly Spaghetti", "https://www.chowhound.com/img/gallery/authentic-copycat-jollibees-need-sauce/l-intro-1663851423.jpg", "₱79")); // Image from Chowhound
+                foodPanel.add(createFoodCard("Burger Steak", "https://scontent.fmnl3-1.fna.fbcdn.net/v/t39.30808-6/2467291557983722_2487291557983722.jpg?_nc_cat=1&ccb=1-7&_nc_sid=8bfeb9&_nc_ohc=example&_nc_oc=example&_nc_ht=scontent.fmnl3-1.fna&oh=00_AfBexample&oe=example", "₱89")); // Image from Facebook post (placeholder URL)
             } else if (restaurant.equals("McDo")) {
-                foodPanel.add(createFoodCard("Big Mac", "GUIBuilder/resources/big_mac.png"));
-                foodPanel.add(createFoodCard("McSpaghetti", "GUIBuilder/resources/mcspaghetti.png"));
-                foodPanel.add(createFoodCard("Fries", "GUIBuilder/resources/fries.png"));
+                foodPanel.add(createFoodCard("Big Mac", "https://topsecretrecipes.com/wp-content/uploads/2018/09/mcdonalds-big-mac-copycat-recipe.jpg", "₱149")); // Image from TSR
+                foodPanel.add(createFoodCard("McSpaghetti", "https://pbs.twimg.com/media/A9zN1jJCAAAJTgL.jpg", "₱59")); // Image from Twitter
+                foodPanel.add(createFoodCard("Fries", "https://pinoycupidgifts.com/wp-content/uploads/2020/05/Large-Fries-McDo.jpg", "₱49")); // Image from PinoyCupid
             }
 
             mainPanel.add(foodPanel, BorderLayout.CENTER);
@@ -225,7 +236,7 @@ public class StoreList extends JFrame {
             add(mainPanel, BorderLayout.CENTER);
         }
 
-        private JPanel createFoodCard(String foodName, String imagePath) {
+        private JPanel createFoodCard(String foodName, String imageUrl, String price) {
             JPanel card = new JPanel();
             card.setBackground(CARD);
             card.setLayout(new BorderLayout());
@@ -236,15 +247,26 @@ public class StoreList extends JFrame {
             JLabel imageLabel = new JLabel();
             imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
             try {
-                ImageIcon icon = new ImageIcon(imagePath);
+                URL url = new URL(imageUrl);
+                ImageIcon icon = new ImageIcon(url);
                 imageLabel.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                imageLabel.setText("Image Not Found");
+            }
             card.add(imageLabel, BorderLayout.CENTER);
 
+            JPanel bottomPanel = new JPanel(new BorderLayout());
+            bottomPanel.setOpaque(false);
             JLabel nameLabel = new JLabel(foodName, SwingConstants.CENTER);
             nameLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
-            nameLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-            card.add(nameLabel, BorderLayout.SOUTH);
+            bottomPanel.add(nameLabel, BorderLayout.NORTH);
+            
+            JLabel priceLabel = new JLabel(price, SwingConstants.CENTER);
+            priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            priceLabel.setForeground(Color.GRAY);
+            bottomPanel.add(priceLabel, BorderLayout.SOUTH);
+            
+            card.add(bottomPanel, BorderLayout.SOUTH);
 
             return card;
         }
