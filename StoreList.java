@@ -1,6 +1,9 @@
 import java.awt.*;
 import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class StoreList extends JFrame {
     // Colors and fonts from MainCode
@@ -38,7 +41,6 @@ public class StoreList extends JFrame {
 
         addNavButton(sidebar, "Dashboard");
         addNavButton(sidebar, "Store List");
-        addNavButton(sidebar, "Order Food/Items");
         addNavButton(sidebar, "My Order History");
         addNavButton(sidebar, "Delivery Progress");
         sidebar.add(Box.createVerticalGlue());
@@ -91,7 +93,7 @@ public class StoreList extends JFrame {
         centerPanel.add(jollibeeButton);
 
         // McDo button with logo
-        JButton mcdoButton = new JButton("McDo");
+        JButton mcdoButton = new JButton("McDonald's");
         mcdoButton.setFont(new Font("SansSerif", Font.BOLD, 18));
         try {
             URL url = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png"); // Direct from URL
@@ -139,9 +141,19 @@ public class StoreList extends JFrame {
         panel.add(Box.createRigidArea(new Dimension(0, 15)));
     }
 
+    private double extractPrice(String priceString) {
+        try {
+            return Double.parseDouble(priceString.replace("₱", "").trim());
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
     // RestaurantFrame inner class
     class RestaurantFrame extends JFrame {
         private final User user;
+        private List<OrderItem> cart = new ArrayList<>();
+        private JPanel cartItemsPanel;
         public RestaurantFrame(User user, String restaurant) {
             this.user = user;
             setTitle("MoveEat - " + restaurant + " Menu");
@@ -169,7 +181,6 @@ public class StoreList extends JFrame {
 
             addNavButton(sidebar, "Dashboard");
             addNavButton(sidebar, "Store List");
-            addNavButton(sidebar, "Order Food/Items");
             addNavButton(sidebar, "My Order History");
             addNavButton(sidebar, "Delivery Progress");
             sidebar.add(Box.createVerticalGlue());
@@ -230,6 +241,42 @@ public class StoreList extends JFrame {
 
             mainPanel.add(foodPanel, BorderLayout.CENTER);
 
+            // Cart panel
+            JPanel cartPanel = new JPanel(new BorderLayout());
+            cartPanel.setBackground(LIGHT_BG);
+            cartPanel.setBorder(BorderFactory.createEmptyBorder(20, 60, 20, 60));
+
+            JLabel cartTitle = new JLabel("Your Cart");
+            cartTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
+            cartPanel.add(cartTitle, BorderLayout.NORTH);
+
+            cartItemsPanel = new JPanel();
+            cartItemsPanel.setLayout(new BoxLayout(cartItemsPanel, BoxLayout.Y_AXIS));
+            cartItemsPanel.setBackground(Color.WHITE);
+            JScrollPane cartScroll = new JScrollPane(cartItemsPanel);
+            cartScroll.setPreferredSize(new Dimension(0, 200)); // Set height
+            cartPanel.add(cartScroll, BorderLayout.CENTER);
+
+            JPanel cartBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JButton proceedButton = new JButton("Proceed to Checkout");
+            proceedButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+            proceedButton.setBackground(PRIMARY);
+            proceedButton.setForeground(Color.WHITE);
+            proceedButton.setFocusPainted(false);
+            proceedButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            proceedButton.addActionListener(e -> {
+                if (cart.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Cart is empty!", "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                new CheckOut(user, cart).setVisible(true);
+                RestaurantFrame.this.dispose();
+            });
+            cartBottom.add(proceedButton);
+            cartPanel.add(cartBottom, BorderLayout.SOUTH);
+
+            mainPanel.add(cartPanel, BorderLayout.SOUTH);
+
             // Home and Back button actions
             homeButton.addActionListener(e -> {
                 new HomePage(user);
@@ -265,14 +312,98 @@ public class StoreList extends JFrame {
             nameLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
             bottomPanel.add(nameLabel, BorderLayout.NORTH);
             
+            JPanel priceAndButtonPanel = new JPanel(new BorderLayout());
+            priceAndButtonPanel.setOpaque(false);
+            
             JLabel priceLabel = new JLabel(price, SwingConstants.CENTER);
             priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
             priceLabel.setForeground(Color.GRAY);
-            bottomPanel.add(priceLabel, BorderLayout.SOUTH);
+            priceAndButtonPanel.add(priceLabel, BorderLayout.NORTH);
             
+            JPanel qtyPanel = new JPanel(new FlowLayout());
+            qtyPanel.setOpaque(false);
+            qtyPanel.add(new JLabel("Qty:"));
+            JSpinner quantitySpinner = new JSpinner(new SpinnerNumberModel(1, 1, 10, 1));
+            qtyPanel.add(quantitySpinner);
+            JButton addToCartButton = new JButton("Add to Cart");
+            addToCartButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+            addToCartButton.setBackground(PRIMARY);
+            addToCartButton.setForeground(Color.WHITE);
+            addToCartButton.setFocusPainted(false);
+            addToCartButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            addToCartButton.addActionListener(e -> {
+                double itemPrice = extractPrice(price);
+                int qty = (Integer) quantitySpinner.getValue();
+                boolean found = false;
+                for (OrderItem item : cart) {
+                    if (item.name.equals(foodName)) {
+                        item.quantity += qty;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    cart.add(new OrderItem(foodName, itemPrice, qty));
+                }
+                updateCartDisplay();
+            });
+            qtyPanel.add(addToCartButton);
+            priceAndButtonPanel.add(qtyPanel, BorderLayout.SOUTH);
+            
+            bottomPanel.add(priceAndButtonPanel, BorderLayout.SOUTH);
             card.add(bottomPanel, BorderLayout.SOUTH);
 
             return card;
+        }
+
+        private void updateCartDisplay() {
+            cartItemsPanel.removeAll();
+            for (OrderItem item : cart) {
+                JPanel row = new JPanel(new BorderLayout());
+                row.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                row.setBackground(Color.WHITE);
+
+                JLabel name = new JLabel(item.name);
+                name.setFont(new Font("SansSerif", Font.BOLD, 14));
+
+                JLabel qty = new JLabel("Qty: " + item.quantity);
+                qty.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+                JLabel price = new JLabel("₱" + String.format("%.2f", item.price));
+                price.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+                JLabel total = new JLabel("₱" + String.format("%.2f", item.getTotal()));
+                total.setFont(new Font("SansSerif", Font.BOLD, 14));
+                total.setForeground(PRIMARY);
+
+                JButton removeBtn = new JButton("Remove");
+                removeBtn.setFont(new Font("SansSerif", Font.PLAIN, 12));
+                removeBtn.setBackground(new Color(255, 100, 100));
+                removeBtn.setForeground(Color.WHITE);
+                removeBtn.setFocusPainted(false);
+                removeBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                removeBtn.addActionListener(e -> {
+                    cart.remove(item);
+                    updateCartDisplay();
+                });
+
+                JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+                left.setOpaque(false);
+                left.add(name);
+                left.add(qty);
+
+                JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+                right.setOpaque(false);
+                right.add(price);
+                right.add(total);
+                right.add(removeBtn);
+
+                row.add(left, BorderLayout.WEST);
+                row.add(right, BorderLayout.EAST);
+                cartItemsPanel.add(row);
+            }
+            cartItemsPanel.revalidate();
+            cartItemsPanel.repaint();
         }
     }
 
