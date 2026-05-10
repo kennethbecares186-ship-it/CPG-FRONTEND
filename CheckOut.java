@@ -70,9 +70,7 @@ public class CheckOut extends JFrame {
 
         JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         navPanel.setOpaque(false);
-        JButton homeButton = new JButton("Home");
         JButton backButton = new JButton("Back");
-        navPanel.add(homeButton);
         navPanel.add(backButton);
         header.add(navPanel, BorderLayout.EAST);
 
@@ -98,7 +96,7 @@ public class CheckOut extends JFrame {
         contentPanel.add(paymentPanel);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        JPanel buttonPanel = createButtonPanel(homeButton, backButton);
+        JPanel buttonPanel = createButtonPanel(backButton);
         contentPanel.add(buttonPanel);
         contentPanel.add(Box.createVerticalGlue());
 
@@ -107,11 +105,6 @@ public class CheckOut extends JFrame {
         scrollPane.getViewport().setBackground(LIGHT_BG);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainPanel.add(scrollPane, BorderLayout.CENTER);
-
-        homeButton.addActionListener(e -> {
-            new CheckOut(user);
-            this.dispose();
-        });
 
         backButton.addActionListener(e -> this.dispose());
 
@@ -347,7 +340,7 @@ public class CheckOut extends JFrame {
         return card;
     }
 
-    private JPanel createButtonPanel(JButton homeButton, JButton backButton) {
+    private JPanel createButtonPanel(JButton backButton) {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         panel.setOpaque(false);
 

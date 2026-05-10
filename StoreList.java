@@ -11,6 +11,7 @@ public class StoreList extends JFrame {
     private final Color CARD = Color.WHITE;
     private final Color SIDEBAR = new Color(120, 25, 45);
     private final User user;
+    private String lastRestaurant = null;
 
     public StoreList(User user) {
         this.user = user;
@@ -60,12 +61,10 @@ public class StoreList extends JFrame {
         title.setFont(new Font("SansSerif", Font.BOLD, 28));
         header.add(title, BorderLayout.WEST);
 
-        // Home and Back buttons at the top right
+        // Back button at the top right
         JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         navPanel.setOpaque(false);
-        JButton homeButton = new JButton("Home");
         JButton backButton = new JButton("Back");
-        navPanel.add(homeButton);
         navPanel.add(backButton);
         header.add(navPanel, BorderLayout.EAST);
 
@@ -78,29 +77,75 @@ public class StoreList extends JFrame {
         centerPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
 
         // Jollibee button with logo
-        JButton jollibeeButton = new JButton("Jollibee");
-        jollibeeButton.setFont(new Font("SansSerif", Font.BOLD, 18));
+        JButton jollibeeButton = new JButton();
+        jollibeeButton.setLayout(new BorderLayout());
+        jollibeeButton.setFont(new Font("SansSerif", Font.BOLD, 24));
+        
+        JPanel jollibeePanel = new JPanel();
+        jollibeePanel.setLayout(new BoxLayout(jollibeePanel, BoxLayout.Y_AXIS));
+        jollibeePanel.setBackground(CARD);
+        jollibeePanel.setOpaque(false);
+        
+        JLabel jollibeeImage = new JLabel();
+        jollibeeImage.setHorizontalAlignment(SwingConstants.CENTER);
         try {
-            URL url = new URL("https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg"); // Derived direct image from Flickr link
+            URL url = new URL("https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg");
             ImageIcon jollibeeIcon = new ImageIcon(url);
-            jollibeeButton.setIcon(new ImageIcon(jollibeeIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))); // Increased from 80x80 to 100x100
+            jollibeeImage.setIcon(new ImageIcon(jollibeeIcon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH)));
         } catch (Exception e) {
-            jollibeeButton.setText("Logo Not Found");
+            jollibeeImage.setText("Logo Not Found");
         }
+        
+        JLabel jollibeeLabel = new JLabel("Jollibee");
+        jollibeeLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
+        jollibeeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        jollibeeImage.setAlignmentX(Component.CENTER_ALIGNMENT);
+        jollibeeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        jollibeePanel.add(Box.createVerticalGlue());
+        jollibeePanel.add(jollibeeImage);
+        jollibeePanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        jollibeePanel.add(jollibeeLabel);
+        jollibeePanel.add(Box.createVerticalGlue());
+        
+        jollibeeButton.add(jollibeePanel, BorderLayout.CENTER);
         jollibeeButton.setBackground(CARD);
         jollibeeButton.setFocusPainted(false);
         centerPanel.add(jollibeeButton);
 
         // McDo button with logo
-        JButton mcdoButton = new JButton("McDonald's");
-        mcdoButton.setFont(new Font("SansSerif", Font.BOLD, 18));
+        JButton mcdoButton = new JButton();
+        mcdoButton.setLayout(new BorderLayout());
+        mcdoButton.setFont(new Font("SansSerif", Font.BOLD, 24));
+        
+        JPanel mcdoPanel = new JPanel();
+        mcdoPanel.setLayout(new BoxLayout(mcdoPanel, BoxLayout.Y_AXIS));
+        mcdoPanel.setBackground(CARD);
+        mcdoPanel.setOpaque(false);
+        
+        JLabel mcdoImage = new JLabel();
+        mcdoImage.setHorizontalAlignment(SwingConstants.CENTER);
         try {
-            URL url = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png"); // Direct from URL
+            URL url = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
             ImageIcon mcdoIcon = new ImageIcon(url);
-            mcdoButton.setIcon(new ImageIcon(mcdoIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH))); // Increased from 80x80 to 100x100
+            mcdoImage.setIcon(new ImageIcon(mcdoIcon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH)));
         } catch (Exception e) {
-            mcdoButton.setText("Logo Not Found");
+            mcdoImage.setText("Logo Not Found");
         }
+        
+        JLabel mcdoLabel = new JLabel("McDonald's");
+        mcdoLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
+        mcdoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        
+        mcdoImage.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mcdoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mcdoPanel.add(Box.createVerticalGlue());
+        mcdoPanel.add(mcdoImage);
+        mcdoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        mcdoPanel.add(mcdoLabel);
+        mcdoPanel.add(Box.createVerticalGlue());
+        
+        mcdoButton.add(mcdoPanel, BorderLayout.CENTER);
         mcdoButton.setBackground(CARD);
         mcdoButton.setFocusPainted(false);
         centerPanel.add(mcdoButton);
@@ -108,15 +153,23 @@ public class StoreList extends JFrame {
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         // Action listeners for restaurant buttons
-        jollibeeButton.addActionListener(e -> new RestaurantFrame(user, "Jollibee").setVisible(true));
-        mcdoButton.addActionListener(e -> new RestaurantFrame(user, "McDo").setVisible(true));
-
-        // Home and Back button actions
-        homeButton.addActionListener(e -> {
-            new HomePage(user);
-            this.dispose();
+        jollibeeButton.addActionListener(e -> {
+            lastRestaurant = "Jollibee";
+            new RestaurantFrame(user, "Jollibee").setVisible(true);
         });
-        backButton.addActionListener(e -> JOptionPane.showMessageDialog(this, "Back clicked!"));
+        mcdoButton.addActionListener(e -> {
+            lastRestaurant = "McDo";
+            new RestaurantFrame(user, "McDo").setVisible(true);
+        });
+
+        // Back button action
+        backButton.addActionListener(e -> {
+            if (lastRestaurant != null) {
+                new RestaurantFrame(user, lastRestaurant).setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a restaurant first.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -212,12 +265,10 @@ public class StoreList extends JFrame {
             leftHeader.add(restName);
             header.add(leftHeader, BorderLayout.WEST);
 
-            // Home and Back buttons at the top right
+            // Back button at the top right
             JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
             navPanel.setOpaque(false);
-            JButton homeButton = new JButton("Home");
             JButton backButton = new JButton("Back");
-            navPanel.add(homeButton);
             navPanel.add(backButton);
             header.add(navPanel, BorderLayout.EAST);
 
@@ -276,11 +327,7 @@ public class StoreList extends JFrame {
 
             mainPanel.add(cartPanel, BorderLayout.SOUTH);
 
-            // Home and Back button actions
-            homeButton.addActionListener(e -> {
-                new HomePage(user);
-                this.dispose();
-            });
+            // Back button action
             backButton.addActionListener(e -> dispose());
 
             add(mainPanel, BorderLayout.CENTER);
@@ -299,7 +346,7 @@ public class StoreList extends JFrame {
             try {
                 URL url = new URL(imageUrl);
                 ImageIcon icon = new ImageIcon(url);
-                imageLabel.setIcon(new ImageIcon(icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH))); // Increased from 100x100 to 150x150
+                imageLabel.setIcon(new ImageIcon(icon.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH)));
             } catch (Exception e) {
                 imageLabel.setText("Image Not Found");
             }

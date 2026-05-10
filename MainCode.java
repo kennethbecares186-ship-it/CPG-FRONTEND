@@ -104,7 +104,7 @@ public class MainCode extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel title = new JLabel(
-                type.equals("LOGIN") ? "Welcome Back" : "Create Account");
+                type.equals("LOGIN") ? "Welcome back!" : "Create Account");
 
         title.setFont(new Font("SansSerif", Font.BOLD, 30));
         title.setForeground(PRIMARY);
@@ -161,20 +161,17 @@ public class MainCode extends JFrame {
 
         formCard.add(passField, gbc);
 
-        // ADMIN CHECKBOX (only for LOGIN)
-        JCheckBox adminCheck = null;
-        if (type.equals("LOGIN")) {
-            adminCheck = new JCheckBox("Login as Admin");
-            adminCheck.setFont(new Font("SansSerif", Font.PLAIN, 14));
-            adminCheck.setForeground(TEXT);
-            adminCheck.setBackground(WHITE);
+        char defaultEchoChar = passField.getEchoChar();
+        JCheckBox showPassword = new JCheckBox("Show Password");
+        showPassword.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        showPassword.setForeground(TEXT);
+        showPassword.setBackground(WHITE);
+        showPassword.addActionListener(e -> passField.setEchoChar(showPassword.isSelected() ? (char)0 : defaultEchoChar));
 
-            gbc.gridy = 6;
-            gbc.gridwidth = 2;
-            gbc.insets = new Insets(10, 20, 10, 20);
-
-            formCard.add(adminCheck, gbc);
-        }
+        gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(5, 20, 5, 20);
+        formCard.add(showPassword, gbc);
 
         // BUTTON
         JButton submitBtn = new JButton(
@@ -186,9 +183,8 @@ public class MainCode extends JFrame {
         submitBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
         submitBtn.setPreferredSize(new Dimension(250, 45));
 
-        gbc.gridy = type.equals("LOGIN") ? 7 : 6;
-        gbc.insets = new Insets(25, 20, 10, 20);
-
+        gbc.gridy = 7;
+        gbc.insets = new Insets(12, 20, 5, 20);
         formCard.add(submitBtn, gbc);
 
         // SWITCH BUTTON
@@ -202,10 +198,23 @@ public class MainCode extends JFrame {
         switchBtn.setForeground(PRIMARY);
         switchBtn.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-        gbc.gridy = type.equals("LOGIN") ? 8 : 7;
-        gbc.insets = new Insets(5, 20, 20, 20);
-
+        gbc.gridy = 8;
+        gbc.insets = new Insets(5, 20, 5, 20);
         formCard.add(switchBtn, gbc);
+
+        // ADMIN CHECKBOX (only for LOGIN)
+        JCheckBox adminCheck = null;
+        if (type.equals("LOGIN")) {
+            adminCheck = new JCheckBox("Login as Admin");
+            adminCheck.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            adminCheck.setForeground(TEXT);
+            adminCheck.setBackground(WHITE);
+
+            gbc.gridy = 9;
+            gbc.gridwidth = 2;
+            gbc.insets = new Insets(5, 20, 20, 20);
+            formCard.add(adminCheck, gbc);
+        }
 
         rightPanel.add(formCard);
 
@@ -253,17 +262,17 @@ class HomePage extends JFrame {
     private JPanel contentContainer = new JPanel(contentLayout);
 
     public HomePage(User user) {
-        this.user = user; // FIX: Initialize user session
+        this.user = user; 
         setTitle("MoveEat - " + user.role);
 
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize immediately for homepage
+        setExtendedState(JFrame.MAXIMIZED_BOTH); 
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         getContentPane().setBackground(LIGHT_BG);
 
-        // ================= SIDEBAR =================
+        // SIDEBAR 
         JPanel sidebar = new JPanel();
         sidebar.setPreferredSize(new Dimension(220, 700));
         sidebar.setBackground(SIDEBAR);
@@ -302,7 +311,7 @@ class HomePage extends JFrame {
         header.setBackground(LIGHT_BG);
         header.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        String greeting = user.isNewUser ? "Hello, " + user.username : "Welcome back, " + user.username; // Change based on signup
+        String greeting = user.isNewUser ? "Hello, " + user.username : "Hello, " + user.username; // Change based on signup
         JLabel welcome = new JLabel(greeting);
         welcome.setFont(new Font("SansSerif", Font.BOLD, 28));
 
@@ -368,17 +377,9 @@ class HomePage extends JFrame {
         heroDesc.setForeground(Color.WHITE);
         heroDesc.setFont(new Font("SansSerif", Font.PLAIN, 16));
 
-        JButton heroBtn = new JButton("View Orders");
-        heroBtn.setBackground(Color.WHITE);
-        heroBtn.setForeground(PRIMARY);
-        heroBtn.setFocusPainted(false);
-        heroBtn.setPreferredSize(new Dimension(140, 40));
-
         heroText.add(heroTitle);
         heroText.add(Box.createRigidArea(new Dimension(0, 10)));
         heroText.add(heroDesc);
-        heroText.add(Box.createRigidArea(new Dimension(0, 20)));
-        heroText.add(heroBtn);
 
         heroCard.add(heroText, BorderLayout.WEST);
         content.add(heroCard);
