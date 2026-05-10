@@ -96,16 +96,9 @@ public class StoreList extends JFrame {
             jollibeeImage.setText("Logo Not Found");
         }
         
-        JLabel jollibeeLabel = new JLabel("Jollibee");
-        jollibeeLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
-        jollibeeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
         jollibeeImage.setAlignmentX(Component.CENTER_ALIGNMENT);
-        jollibeeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         jollibeePanel.add(Box.createVerticalGlue());
         jollibeePanel.add(jollibeeImage);
-        jollibeePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        jollibeePanel.add(jollibeeLabel);
         jollibeePanel.add(Box.createVerticalGlue());
         
         jollibeeButton.add(jollibeePanel, BorderLayout.CENTER);
@@ -133,16 +126,9 @@ public class StoreList extends JFrame {
             mcdoImage.setText("Logo Not Found");
         }
         
-        JLabel mcdoLabel = new JLabel("McDonald's");
-        mcdoLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
-        mcdoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
         mcdoImage.setAlignmentX(Component.CENTER_ALIGNMENT);
-        mcdoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         mcdoPanel.add(Box.createVerticalGlue());
         mcdoPanel.add(mcdoImage);
-        mcdoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        mcdoPanel.add(mcdoLabel);
         mcdoPanel.add(Box.createVerticalGlue());
         
         mcdoButton.add(mcdoPanel, BorderLayout.CENTER);
@@ -259,7 +245,7 @@ public class StoreList extends JFrame {
             } catch (Exception e) {
                 restLogo.setText("Logo");
             }
-            JLabel restName = new JLabel(restaurant + " Menu");
+            JLabel restName = new JLabel((restaurant.equals("McDo") ? "McDonald's" : restaurant) + " Menu");
             restName.setFont(new Font("SansSerif", Font.BOLD, 28));
             leftHeader.add(restLogo);
             leftHeader.add(restName);

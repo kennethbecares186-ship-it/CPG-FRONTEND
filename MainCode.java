@@ -79,7 +79,7 @@ public class MainCode extends JFrame {
         appTitle.setFont(new Font("SansSerif", Font.BOLD, 55));
         appTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel subtitle = new JLabel("Fast Delivery & Food Ordering");
+        JLabel subtitle = new JLabel("Click, Move, Eat");
         subtitle.setForeground(Color.WHITE);
         subtitle.setFont(new Font("SansSerif", Font.PLAIN, 22));
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -104,7 +104,7 @@ public class MainCode extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel title = new JLabel(
-                type.equals("LOGIN") ? "Welcome back!" : "Create Account");
+                type.equals("LOGIN") ? "Welcome!" : "Create Account");
 
         title.setFont(new Font("SansSerif", Font.BOLD, 30));
         title.setForeground(PRIMARY);
