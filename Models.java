@@ -1,6 +1,6 @@
-import java.util.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 // --- Data Model ---
 class User {
@@ -8,12 +8,14 @@ class User {
     String role; // "ADMIN" or "CUSTOMER"
     boolean isNewUser; // True if created via signup
     List<Order> orders;
+    List<String> drivers; // Track added drivers
 
     User(String username, String role, boolean isNewUser) {
         this.username = username;
         this.role = role;
         this.isNewUser = isNewUser;
         this.orders = new ArrayList<>();
+        this.drivers = new ArrayList<>();
     }
 }
 

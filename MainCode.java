@@ -316,12 +316,7 @@ class HomePage extends JFrame {
         textPanel.add(welcome);
         textPanel.add(subtitle);
 
-        JTextField searchBar = new JTextField(" Search...");
-        searchBar.setPreferredSize(new Dimension(220, 40));
-        searchBar.setFont(new Font("SansSerif", Font.PLAIN, 14));
-
         header.add(textPanel, BorderLayout.WEST);
-        header.add(searchBar, BorderLayout.EAST);
 
         contentContainer.add(createDashboardPanel(), "DASHBOARD");
 
@@ -329,6 +324,10 @@ class HomePage extends JFrame {
             contentContainer.add(createManageDeliveriesPanel(), "MANAGE_DELIVERIES");
             contentContainer.add(createFleetTrackingPanel(), "FLEET_TRACKING");
             contentContainer.add(createUserManagementPanel(), "USER_MANAGEMENT");
+            // Set Manage Deliveries as default for admins if no drivers added
+            if (user.drivers.isEmpty()) {
+                contentLayout.show(contentContainer, "MANAGE_DELIVERIES");
+            }
         } else {
             contentContainer.add(createStoreListPanel(), "STORE_LIST");
             contentContainer.add(createOrderHistoryPanel(), "ORDER_HISTORY");
@@ -423,7 +422,13 @@ class HomePage extends JFrame {
             };
         }
 
-        JTable table = new JTable(data, columns);
+        DefaultTableModel tableModel = new DefaultTableModel(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        JTable table = new JTable(tableModel);
         table.setRowHeight(35);
         table.setFont(new Font("SansSerif", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -461,7 +466,13 @@ class HomePage extends JFrame {
                 }
             }
 
-            JTable orderTable = new JTable(orderData, orderColumns);
+            DefaultTableModel orderTableModel = new DefaultTableModel(orderData, orderColumns) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+            JTable orderTable = new JTable(orderTableModel);
             orderTable.setRowHeight(35);
             orderTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
             orderTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -506,7 +517,13 @@ class HomePage extends JFrame {
             }
         }
 
-        JTable orderTable = new JTable(orderData, orderColumns);
+        DefaultTableModel orderTableModel = new DefaultTableModel(orderData, orderColumns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        JTable orderTable = new JTable(orderTableModel);
         orderTable.setRowHeight(35);
         orderTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
         orderTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -815,7 +832,13 @@ class HomePage extends JFrame {
             {"Taco Town", "South Side", "4.7", "Closed"}
         };
 
-        JTable storeTable = new JTable(storeData, storeColumns);
+        DefaultTableModel storeTableModel = new DefaultTableModel(storeData, storeColumns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        JTable storeTable = new JTable(storeTableModel);
         storeTable.setRowHeight(35);
         storeTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
         storeTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -854,7 +877,13 @@ class HomePage extends JFrame {
             {"#503", "South Side Mall", "Delivered", "Mike Ross", "View Details"}
         };
 
-        JTable table = new JTable(data, columns);
+        DefaultTableModel tableModel = new DefaultTableModel(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        JTable table = new JTable(tableModel);
         table.setRowHeight(35);
         table.setFont(new Font("SansSerif", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -893,7 +922,13 @@ class HomePage extends JFrame {
             {"V003", "Mike Ross", "South Side", "Inactive", "1 hour ago"}
         };
 
-        JTable table = new JTable(data, columns);
+        DefaultTableModel tableModel = new DefaultTableModel(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        JTable table = new JTable(tableModel);
         table.setRowHeight(35);
         table.setFont(new Font("SansSerif", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -925,11 +960,11 @@ class HomePage extends JFrame {
         JLabel userTitle = new JLabel("User Management");
         userTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
 
-        String[] columns = {"User ID", "Name", "Role", "Status", "Actions"};
+        String[] columns = {"User ID", "Name", "Role", "Status"};
         Object[][] data = {
-            {"U001", "Alice Johnson", "Customer", "Active", "Edit/Delete"},
-            {"U002", "Bob Smith", "Customer", "Active", "Edit/Delete"},
-            {"U003", "Admin User", "Admin", "Active", "Edit/Delete"}
+            {"U001", "Alice Johnson", "Customer", "Active"},
+            {"U002", "Bob Smith", "Customer", "Active"},
+            {"U003", "Admin User", "Admin", "Active"}
         };
 
         DefaultTableModel model = new DefaultTableModel(data, columns) {
@@ -954,12 +989,35 @@ class HomePage extends JFrame {
 
         JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonRow.setOpaque(false);
+        
+        JButton deleteDriverBtn = new JButton("Delete Driver");
+        deleteDriverBtn.setBackground(new Color(200, 50, 50));
+        deleteDriverBtn.setForeground(Color.WHITE);
+        deleteDriverBtn.setFocusPainted(false);
+        deleteDriverBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        deleteDriverBtn.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a driver to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this driver?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                String driverId = (String) model.getValueAt(selectedRow, 0);
+                user.drivers.remove(driverId);
+                model.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(this, "Driver deleted successfully!", "Deleted", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        
         JButton addDriverBtn = new JButton("Add Driver");
         addDriverBtn.setBackground(PRIMARY);
         addDriverBtn.setForeground(Color.WHITE);
         addDriverBtn.setFocusPainted(false);
         addDriverBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
         addDriverBtn.addActionListener(e -> showAddDriverDialog(model));
+        
+        buttonRow.add(deleteDriverBtn);
         buttonRow.add(addDriverBtn);
 
         content.add(userCard);
@@ -1028,6 +1086,8 @@ class HomePage extends JFrame {
             }
             String driverId = "D" + (model.getRowCount() + 1);
             model.addRow(new Object[]{driverId, driverName, "Driver", "Active", "Edit/Delete"});
+            // Track driver in user's drivers list
+            user.drivers.add(driverId);
             JOptionPane.showMessageDialog(dialog, "Driver added successfully!", "Saved", JOptionPane.INFORMATION_MESSAGE);
             dialog.dispose();
         });
