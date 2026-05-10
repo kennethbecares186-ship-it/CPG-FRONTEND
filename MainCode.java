@@ -2,17 +2,64 @@ import java.awt.*;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowStateListener;
 import javax.swing.*;
+import java.util.List;
+import java.util.ArrayList;
 
 // --- Data Model ---
 class User {
     String username;
     String role; // "ADMIN" or "CUSTOMER"
     boolean isNewUser; // True if created via signup
+    List<Order> orders;
 
     User(String username, String role, boolean isNewUser) {
         this.username = username;
         this.role = role;
         this.isNewUser = isNewUser;
+        this.orders = new ArrayList<>();
+    }
+}
+
+// Order Item class
+class OrderItem {
+    public String name;
+    public double price;
+    public int quantity;
+
+    public OrderItem(String name, double price, int quantity) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public double getTotal() {
+        return price * quantity;
+    }
+}
+
+// Order class
+class Order {
+    public String orderId;
+    public String customerName;
+    public String address;
+    public String phone;
+    public List<OrderItem> items;
+    public double totalAmount;
+    public String paymentMethod;
+    public String status;
+    public String orderDate;
+
+    public Order(String orderId, String customerName, String address, String phone,
+                 List<OrderItem> items, double totalAmount, String paymentMethod) {
+        this.orderId = orderId;
+        this.customerName = customerName;
+        this.address = address;
+        this.phone = phone;
+        this.items = items;
+        this.totalAmount = totalAmount;
+        this.paymentMethod = paymentMethod;
+        this.status = "Delivered"; // For history, assume delivered
+        this.orderDate = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy"));
     }
 }
 
@@ -278,7 +325,6 @@ class HomePage extends JFrame {
             addNavButton(sidebar, "User Management");
         } else {
             addNavButton(sidebar, "Store List");
-            addNavButton(sidebar, "Order Food/Items");
             addNavButton(sidebar, "My Order History");
             addNavButton(sidebar, "Delivery Progress");
         }
@@ -409,6 +455,45 @@ class HomePage extends JFrame {
         tableCard.add(scrollPane, BorderLayout.CENTER);
 
         content.add(tableCard);
+        content.add(Box.createRigidArea(new Dimension(0, 25)));
+
+        // ================= MY ORDER HISTORY =================
+        if (!user.role.equals("ADMIN")) {
+            JPanel orderHistoryCard = new RoundedPanel(25);
+            orderHistoryCard.setLayout(new BorderLayout());
+            orderHistoryCard.setBackground(CARD);
+            orderHistoryCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+            JLabel historyTitle = new JLabel("My Order History");
+            historyTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
+
+            String[] orderColumns = {"Order ID", "Date", "Items", "Total", "Status"};
+            Object[][] orderData;
+            if (user.orders.isEmpty()) {
+                orderData = new Object[][]{{"No orders yet", "", "", "", ""}};
+            } else {
+                orderData = new Object[user.orders.size()][];
+                for (int i = 0; i < user.orders.size(); i++) {
+                    Order order = user.orders.get(i);
+                    orderData[i] = new Object[]{order.orderId, order.orderDate, getItemsSummary(order.items), "₱" + String.format("%.2f", order.totalAmount), order.status};
+                }
+            }
+
+            JTable orderTable = new JTable(orderData, orderColumns);
+            orderTable.setRowHeight(35);
+            orderTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            orderTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+            orderTable.getTableHeader().setBackground(PRIMARY);
+            orderTable.getTableHeader().setForeground(Color.WHITE);
+
+            JScrollPane orderScrollPane = new JScrollPane(orderTable);
+            orderScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+            orderHistoryCard.add(historyTitle, BorderLayout.NORTH);
+            orderHistoryCard.add(orderScrollPane, BorderLayout.CENTER);
+
+            content.add(orderHistoryCard);
+        }
 
         mainPanel.add(header, BorderLayout.NORTH);
         mainPanel.add(content, BorderLayout.CENTER);
@@ -466,6 +551,15 @@ class HomePage extends JFrame {
         card.add(text);
 
         return card;
+    }
+
+    private String getItemsSummary(List<OrderItem> items) {
+        StringBuilder sb = new StringBuilder();
+        for (OrderItem item : items) {
+            if (sb.length() > 0) sb.append(", ");
+            sb.append(item.name).append(" x").append(item.quantity);
+        }
+        return sb.toString();
     }
 }
 
