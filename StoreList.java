@@ -1,9 +1,8 @@
 import java.awt.*;
-import java.net.URL;
-import java.util.List;
+import java.net.*;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 
 public class StoreList extends JFrame {
     // Colors and fonts from MainCode

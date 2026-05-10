@@ -1,67 +1,8 @@
 import java.awt.*;
-import java.awt.event.ComponentListener;
-import java.awt.event.WindowStateListener;
+import java.awt.event.*;
 import javax.swing.*;
 import java.util.List;
 import java.util.ArrayList;
-
-// --- Data Model ---
-class User {
-    String username;
-    String role; // "ADMIN" or "CUSTOMER"
-    boolean isNewUser; // True if created via signup
-    List<Order> orders;
-
-    User(String username, String role, boolean isNewUser) {
-        this.username = username;
-        this.role = role;
-        this.isNewUser = isNewUser;
-        this.orders = new ArrayList<>();
-    }
-}
-
-// Order Item class
-class OrderItem {
-    public String name;
-    public double price;
-    public int quantity;
-
-    public OrderItem(String name, double price, int quantity) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-    }
-
-    public double getTotal() {
-        return price * quantity;
-    }
-}
-
-// Order class
-class Order {
-    public String orderId;
-    public String customerName;
-    public String address;
-    public String phone;
-    public List<OrderItem> items;
-    public double totalAmount;
-    public String paymentMethod;
-    public String status;
-    public String orderDate;
-
-    public Order(String orderId, String customerName, String address, String phone,
-                 List<OrderItem> items, double totalAmount, String paymentMethod) {
-        this.orderId = orderId;
-        this.customerName = customerName;
-        this.address = address;
-        this.phone = phone;
-        this.items = items;
-        this.totalAmount = totalAmount;
-        this.paymentMethod = paymentMethod;
-        this.status = "Delivered"; // For history, assume delivered
-        this.orderDate = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy"));
-    }
-}
 
 // LOGINN
 public class MainCode extends JFrame {
@@ -219,6 +160,21 @@ public class MainCode extends JFrame {
 
         formCard.add(passField, gbc);
 
+        // ADMIN CHECKBOX (only for LOGIN)
+        JCheckBox adminCheck = null;
+        if (type.equals("LOGIN")) {
+            adminCheck = new JCheckBox("Login as Admin");
+            adminCheck.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            adminCheck.setForeground(TEXT);
+            adminCheck.setBackground(WHITE);
+
+            gbc.gridy = 6;
+            gbc.gridwidth = 2;
+            gbc.insets = new Insets(10, 20, 10, 20);
+
+            formCard.add(adminCheck, gbc);
+        }
+
         // BUTTON
         JButton submitBtn = new JButton(
                 type.equals("LOGIN") ? "LOGIN" : "CREATE ACCOUNT");
@@ -229,7 +185,7 @@ public class MainCode extends JFrame {
         submitBtn.setFont(new Font("SansSerif", Font.BOLD, 16));
         submitBtn.setPreferredSize(new Dimension(250, 45));
 
-        gbc.gridy = 6;
+        gbc.gridy = type.equals("LOGIN") ? 7 : 6;
         gbc.insets = new Insets(25, 20, 10, 20);
 
         formCard.add(submitBtn, gbc);
@@ -245,7 +201,7 @@ public class MainCode extends JFrame {
         switchBtn.setForeground(PRIMARY);
         switchBtn.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
-        gbc.gridy = 7;
+        gbc.gridy = type.equals("LOGIN") ? 8 : 7;
         gbc.insets = new Insets(5, 20, 20, 20);
 
         formCard.add(switchBtn, gbc);
@@ -258,6 +214,7 @@ public class MainCode extends JFrame {
         // Action Listeners
         switchBtn.addActionListener(e -> cardLayout.show(mainContainer, type.equals("LOGIN") ? "SIGNUP_PAGE" : "LOGIN_PAGE"));
 
+        final JCheckBox finalAdminCheck = adminCheck;
         submitBtn.addActionListener(e -> {
             String name = userField.getText();
             if (name.isEmpty()) {
@@ -266,7 +223,7 @@ public class MainCode extends JFrame {
             }
 
             // SIMULATED AUTH LOGIC
-            String role = name.toLowerCase().contains("admin") ? "ADMIN" : "CUSTOMER";
+            String role = (finalAdminCheck != null && finalAdminCheck.isSelected()) ? "ADMIN" : "CUSTOMER";
             boolean isNewUser = type.equals("SIGNUP"); // True for signup
             User sessionUser = new User(name, role, isNewUser);
 
@@ -290,6 +247,9 @@ class HomePage extends JFrame {
     Color LIGHT_BG = new Color(248, 240, 240);
     Color CARD = Color.WHITE;
     Color SIDEBAR = new Color(120, 25, 45);
+
+    private CardLayout contentLayout = new CardLayout();
+    private JPanel contentContainer = new JPanel(contentLayout);
 
     public HomePage(User user) {
         this.user = user; // FIX: Initialize user session
@@ -362,7 +322,28 @@ class HomePage extends JFrame {
         header.add(textPanel, BorderLayout.WEST);
         header.add(searchBar, BorderLayout.EAST);
 
-        // ================= DASHBOARD CONTENT =================
+        contentContainer.add(createDashboardPanel(), "DASHBOARD");
+
+        if (user.role.equals("ADMIN")) {
+            contentContainer.add(createManageDeliveriesPanel(), "MANAGE_DELIVERIES");
+            contentContainer.add(createFleetTrackingPanel(), "FLEET_TRACKING");
+            contentContainer.add(createUserManagementPanel(), "USER_MANAGEMENT");
+        } else {
+            contentContainer.add(createStoreListPanel(), "STORE_LIST");
+            contentContainer.add(createOrderHistoryPanel(), "ORDER_HISTORY");
+            contentContainer.add(createDeliveryProgressPanel(), "DELIVERY_PROGRESS");
+        }
+
+        mainPanel.add(header, BorderLayout.NORTH);
+        mainPanel.add(contentContainer, BorderLayout.CENTER);
+
+        add(sidebar, BorderLayout.WEST);
+        add(mainPanel, BorderLayout.CENTER);
+
+        setVisible(true);
+    }
+
+    private JPanel createDashboardPanel() {
         JPanel content = new JPanel();
         content.setBackground(LIGHT_BG);
         content.setBorder(BorderFactory.createEmptyBorder(0, 25, 25, 25));
@@ -495,13 +476,252 @@ class HomePage extends JFrame {
             content.add(orderHistoryCard);
         }
 
-        mainPanel.add(header, BorderLayout.NORTH);
-        mainPanel.add(content, BorderLayout.CENTER);
+        return content;
+    }
 
-        add(sidebar, BorderLayout.WEST);
-        add(mainPanel, BorderLayout.CENTER);
+    private JPanel createOrderHistoryPanel() {
+        JPanel content = new JPanel();
+        content.setBackground(LIGHT_BG);
+        content.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
-        setVisible(true);
+        JPanel orderHistoryCard = new RoundedPanel(25);
+        orderHistoryCard.setLayout(new BorderLayout());
+        orderHistoryCard.setBackground(CARD);
+        orderHistoryCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel historyTitle = new JLabel("My Order History");
+        historyTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
+
+        String[] orderColumns = {"Order ID", "Date", "Items", "Total", "Status"};
+        Object[][] orderData;
+        if (user.orders.isEmpty()) {
+            orderData = new Object[][]{{"No orders yet", "", "", "", ""}};
+        } else {
+            orderData = new Object[user.orders.size()][];
+            for (int i = 0; i < user.orders.size(); i++) {
+                Order order = user.orders.get(i);
+                orderData[i] = new Object[]{order.orderId, order.orderDate, getItemsSummary(order.items), "₱" + String.format("%.2f", order.totalAmount), order.status};
+            }
+        }
+
+        JTable orderTable = new JTable(orderData, orderColumns);
+        orderTable.setRowHeight(35);
+        orderTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        orderTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+        orderTable.getTableHeader().setBackground(PRIMARY);
+        orderTable.getTableHeader().setForeground(Color.WHITE);
+
+        JScrollPane orderScrollPane = new JScrollPane(orderTable);
+        orderScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        orderHistoryCard.add(historyTitle, BorderLayout.NORTH);
+        orderHistoryCard.add(orderScrollPane, BorderLayout.CENTER);
+
+        content.add(orderHistoryCard);
+
+        return content;
+    }
+
+    private JPanel createDeliveryProgressPanel() {
+        JPanel content = new JPanel();
+        content.setBackground(LIGHT_BG);
+        content.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+
+        JPanel progressCard = new RoundedPanel(25);
+        progressCard.setLayout(new BorderLayout());
+        progressCard.setBackground(CARD);
+        progressCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel progressTitle = new JLabel("Delivery Progress");
+        progressTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
+
+        // Simple progress display
+        JPanel progressPanel = new JPanel();
+        progressPanel.setBackground(CARD);
+        progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.Y_AXIS));
+
+        JLabel orderLabel = new JLabel("Order #502 - North Park Ave (Home)");
+        orderLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+
+        JProgressBar progressBar = new JProgressBar(0, 100);
+        progressBar.setValue(75);
+        progressBar.setStringPainted(true);
+        progressBar.setString("In Transit - 75%");
+
+        JLabel statusLabel = new JLabel("Driver: Sarah Smith | ETA: 15 mins");
+        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        statusLabel.setForeground(Color.GRAY);
+
+        progressPanel.add(orderLabel);
+        progressPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        progressPanel.add(progressBar);
+        progressPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        progressPanel.add(statusLabel);
+
+        progressCard.add(progressTitle, BorderLayout.NORTH);
+        progressCard.add(progressPanel, BorderLayout.CENTER);
+
+        content.add(progressCard);
+
+        return content;
+    }
+
+    private JPanel createStoreListPanel() {
+        JPanel content = new JPanel();
+        content.setBackground(LIGHT_BG);
+        content.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+
+        JPanel storeCard = new RoundedPanel(25);
+        storeCard.setLayout(new BorderLayout());
+        storeCard.setBackground(CARD);
+        storeCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel storeTitle = new JLabel("Available Stores");
+        storeTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
+
+        String[] storeColumns = {"Store Name", "Location", "Rating", "Status"};
+        Object[][] storeData = {
+            {"Burger Palace", "Downtown", "4.5", "Open"},
+            {"Pizza Corner", "North Park", "4.2", "Open"},
+            {"Taco Town", "South Side", "4.7", "Closed"}
+        };
+
+        JTable storeTable = new JTable(storeData, storeColumns);
+        storeTable.setRowHeight(35);
+        storeTable.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        storeTable.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+        storeTable.getTableHeader().setBackground(PRIMARY);
+        storeTable.getTableHeader().setForeground(Color.WHITE);
+
+        JScrollPane storeScrollPane = new JScrollPane(storeTable);
+        storeScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        storeCard.add(storeTitle, BorderLayout.NORTH);
+        storeCard.add(storeScrollPane, BorderLayout.CENTER);
+
+        content.add(storeCard);
+
+        return content;
+    }
+
+    private JPanel createManageDeliveriesPanel() {
+        JPanel content = new JPanel();
+        content.setBackground(LIGHT_BG);
+        content.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+
+        JPanel deliveriesCard = new RoundedPanel(25);
+        deliveriesCard.setLayout(new BorderLayout());
+        deliveriesCard.setBackground(CARD);
+        deliveriesCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel deliveriesTitle = new JLabel("Manage Deliveries");
+        deliveriesTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
+
+        String[] columns = {"Order ID", "Address", "Status", "Driver", "Actions"};
+        Object[][] data = {
+            {"#501", "Downtown - Central", "Pending", "John Doe", "Assign/Reassign"},
+            {"#502", "North Park Ave", "In Transit", "Sarah Smith", "Update Status"},
+            {"#503", "South Side Mall", "Delivered", "Mike Ross", "View Details"}
+        };
+
+        JTable table = new JTable(data, columns);
+        table.setRowHeight(35);
+        table.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+        table.getTableHeader().setBackground(PRIMARY);
+        table.getTableHeader().setForeground(Color.WHITE);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        deliveriesCard.add(deliveriesTitle, BorderLayout.NORTH);
+        deliveriesCard.add(scrollPane, BorderLayout.CENTER);
+
+        content.add(deliveriesCard);
+
+        return content;
+    }
+
+    private JPanel createFleetTrackingPanel() {
+        JPanel content = new JPanel();
+        content.setBackground(LIGHT_BG);
+        content.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+
+        JPanel fleetCard = new RoundedPanel(25);
+        fleetCard.setLayout(new BorderLayout());
+        fleetCard.setBackground(CARD);
+        fleetCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel fleetTitle = new JLabel("Fleet Tracking");
+        fleetTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
+
+        String[] columns = {"Vehicle ID", "Driver", "Location", "Status", "Last Update"};
+        Object[][] data = {
+            {"V001", "John Doe", "Downtown", "Active", "2 mins ago"},
+            {"V002", "Sarah Smith", "North Park", "Active", "5 mins ago"},
+            {"V003", "Mike Ross", "South Side", "Inactive", "1 hour ago"}
+        };
+
+        JTable table = new JTable(data, columns);
+        table.setRowHeight(35);
+        table.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+        table.getTableHeader().setBackground(PRIMARY);
+        table.getTableHeader().setForeground(Color.WHITE);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        fleetCard.add(fleetTitle, BorderLayout.NORTH);
+        fleetCard.add(scrollPane, BorderLayout.CENTER);
+
+        content.add(fleetCard);
+
+        return content;
+    }
+
+    private JPanel createUserManagementPanel() {
+        JPanel content = new JPanel();
+        content.setBackground(LIGHT_BG);
+        content.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+
+        JPanel userCard = new RoundedPanel(25);
+        userCard.setLayout(new BorderLayout());
+        userCard.setBackground(CARD);
+        userCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel userTitle = new JLabel("User Management");
+        userTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
+
+        String[] columns = {"User ID", "Name", "Role", "Status", "Actions"};
+        Object[][] data = {
+            {"U001", "Alice Johnson", "Customer", "Active", "Edit/Delete"},
+            {"U002", "Bob Smith", "Customer", "Active", "Edit/Delete"},
+            {"U003", "Admin User", "Admin", "Active", "Edit/Delete"}
+        };
+
+        JTable table = new JTable(data, columns);
+        table.setRowHeight(35);
+        table.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+        table.getTableHeader().setBackground(PRIMARY);
+        table.getTableHeader().setForeground(Color.WHITE);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        userCard.add(userTitle, BorderLayout.NORTH);
+        userCard.add(scrollPane, BorderLayout.CENTER);
+
+        content.add(userCard);
+
+        return content;
     }
 
     private void addNavButton(JPanel panel, String text) {
@@ -527,6 +747,18 @@ class HomePage extends JFrame {
                 new StoreList(this.user).setVisible(true);
                 this.dispose();
             });
+        } else if (text.equals("Dashboard")) {
+            btn.addActionListener(e -> contentLayout.show(contentContainer, "DASHBOARD"));
+        } else if (text.equals("Manage Deliveries")) {
+            btn.addActionListener(e -> contentLayout.show(contentContainer, "MANAGE_DELIVERIES"));
+        } else if (text.equals("Fleet Tracking")) {
+            btn.addActionListener(e -> contentLayout.show(contentContainer, "FLEET_TRACKING"));
+        } else if (text.equals("User Management")) {
+            btn.addActionListener(e -> contentLayout.show(contentContainer, "USER_MANAGEMENT"));
+        } else if (text.equals("My Order History")) {
+            btn.addActionListener(e -> contentLayout.show(contentContainer, "ORDER_HISTORY"));
+        } else if (text.equals("Delivery Progress")) {
+            btn.addActionListener(e -> contentLayout.show(contentContainer, "DELIVERY_PROGRESS"));
         }
 
         panel.add(btn);

@@ -1,52 +1,7 @@
 import java.awt.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
-
-// Order Item class
-class OrderItem {
-    public String name;
-    public double price;
-    public int quantity;
-
-    public OrderItem(String name, double price, int quantity) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-    }
-
-    public double getTotal() {
-        return price * quantity;
-    }
-}
-
-// Order class
-class Order {
-    public String orderId;
-    public String customerName;
-    public String address;
-    public String phone;
-    public List<OrderItem> items;
-    public double totalAmount;
-    public String paymentMethod;
-    public String status;
-    public String orderDate;
-
-    public Order(String orderId, String customerName, String address, String phone,
-                 List<OrderItem> items, double totalAmount, String paymentMethod) {
-        this.orderId = orderId;
-        this.customerName = customerName;
-        this.address = address;
-        this.phone = phone;
-        this.items = items;
-        this.totalAmount = totalAmount;
-        this.paymentMethod = paymentMethod;
-        this.status = "Pending";
-        this.orderDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm"));
-    }
-}
 
 public class CheckOut extends JFrame {
     // Colors from MainCode
