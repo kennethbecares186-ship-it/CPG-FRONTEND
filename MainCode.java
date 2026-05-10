@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.table.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -706,7 +707,14 @@ class HomePage extends JFrame {
             {"U003", "Admin User", "Admin", "Active", "Edit/Delete"}
         };
 
-        JTable table = new JTable(data, columns);
+        DefaultTableModel model = new DefaultTableModel(data, columns) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        JTable table = new JTable(model);
         table.setRowHeight(35);
         table.setFont(new Font("SansSerif", Font.PLAIN, 14));
         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -719,9 +727,99 @@ class HomePage extends JFrame {
         userCard.add(userTitle, BorderLayout.NORTH);
         userCard.add(scrollPane, BorderLayout.CENTER);
 
+        JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonRow.setOpaque(false);
+        JButton addDriverBtn = new JButton("Add Driver");
+        addDriverBtn.setBackground(PRIMARY);
+        addDriverBtn.setForeground(Color.WHITE);
+        addDriverBtn.setFocusPainted(false);
+        addDriverBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        addDriverBtn.addActionListener(e -> showAddDriverDialog(model));
+        buttonRow.add(addDriverBtn);
+
         content.add(userCard);
+        content.add(Box.createRigidArea(new Dimension(0, 15)));
+        content.add(buttonRow);
 
         return content;
+    }
+
+    private void showAddDriverDialog(DefaultTableModel model) {
+        JDialog dialog = new JDialog(this, "Add New Driver", true);
+        dialog.setSize(420, 360);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout());
+
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setBackground(LIGHT_BG);
+        form.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(12, 10, 12, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        JLabel nameLabel = new JLabel("Driver Name");
+        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        form.add(nameLabel, gbc);
+
+        gbc.gridy++;
+        JTextField nameField = new JTextField(20);
+        form.add(nameField, gbc);
+
+        gbc.gridy++;
+        JLabel phoneLabel = new JLabel("Phone Number");
+        phoneLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        form.add(phoneLabel, gbc);
+
+        gbc.gridy++;
+        JTextField phoneField = new JTextField(20);
+        form.add(phoneField, gbc);
+
+        gbc.gridy++;
+        JLabel licenseLabel = new JLabel("License / ID");
+        licenseLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        form.add(licenseLabel, gbc);
+
+        gbc.gridy++;
+        JTextField licenseField = new JTextField(20);
+        form.add(licenseField, gbc);
+
+        JPanel actionRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        actionRow.setOpaque(false);
+        JButton saveBtn = new JButton("Save Driver");
+        saveBtn.setBackground(PRIMARY);
+        saveBtn.setForeground(Color.WHITE);
+        saveBtn.setFocusPainted(false);
+        saveBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        saveBtn.addActionListener(e -> {
+            String driverName = nameField.getText().trim();
+            String phone = phoneField.getText().trim();
+            String license = licenseField.getText().trim();
+            if (driverName.isEmpty() || phone.isEmpty() || license.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Please fill in all driver details.", "Missing Information", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            String driverId = "D" + (model.getRowCount() + 1);
+            model.addRow(new Object[]{driverId, driverName, "Driver", "Active", "Edit/Delete"});
+            JOptionPane.showMessageDialog(dialog, "Driver added successfully!", "Saved", JOptionPane.INFORMATION_MESSAGE);
+            dialog.dispose();
+        });
+
+        JButton cancelBtn = new JButton("Cancel");
+        cancelBtn.setBackground(Color.LIGHT_GRAY);
+        cancelBtn.setForeground(Color.DARK_GRAY);
+        cancelBtn.setFocusPainted(false);
+        cancelBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        cancelBtn.addActionListener(e -> dialog.dispose());
+
+        actionRow.add(cancelBtn);
+        actionRow.add(saveBtn);
+
+        dialog.add(form, BorderLayout.CENTER);
+        dialog.add(actionRow, BorderLayout.SOUTH);
+        dialog.setVisible(true);
     }
 
     private void addNavButton(JPanel panel, String text) {
