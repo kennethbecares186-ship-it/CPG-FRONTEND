@@ -4,7 +4,7 @@ import java.util.List;
 import javax.swing.*;
 
 public class CheckOut extends JFrame {
-    // Colors from MainCode
+
     private final Color PRIMARY = new Color(186, 55, 78);
     private final Color LIGHT_BG = new Color(248, 240, 240);
     private final Color CARD = Color.WHITE;
@@ -33,7 +33,6 @@ public class CheckOut extends JFrame {
         setLayout(new BorderLayout());
         getContentPane().setBackground(LIGHT_BG);
 
-        // Sidebar
         JPanel sidebar = new JPanel();
         sidebar.setPreferredSize(new Dimension(220, 700));
         sidebar.setBackground(SIDEBAR);
@@ -56,7 +55,6 @@ public class CheckOut extends JFrame {
 
         add(sidebar, BorderLayout.WEST);
 
-        // Main area with scroll
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(LIGHT_BG);
 
@@ -70,7 +68,6 @@ public class CheckOut extends JFrame {
         title.setForeground(TEXT);
         header.add(title, BorderLayout.WEST);
 
-        // Home and Back buttons
         JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         navPanel.setOpaque(false);
         JButton homeButton = new JButton("Home");
@@ -81,28 +78,26 @@ public class CheckOut extends JFrame {
 
         mainPanel.add(header, BorderLayout.NORTH);
 
-        // Main content area with scroll
         JPanel contentPanel = new JPanel();
         contentPanel.setBackground(LIGHT_BG);
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 40, 40));
 
-        // Order Summary Section
+        // Order Summary 
         JPanel summaryCard = createOrderSummaryCard();
         contentPanel.add(summaryCard);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // Customer Info Section
+        // Customer Info 
         JPanel customerPanel = createCustomerInfoPanel();
         contentPanel.add(customerPanel);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // Payment Method Section
+        // Payment Method 
         JPanel paymentPanel = createPaymentMethodPanel();
         contentPanel.add(paymentPanel);
         contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // Buttons
         JPanel buttonPanel = createButtonPanel(homeButton, backButton);
         contentPanel.add(buttonPanel);
         contentPanel.add(Box.createVerticalGlue());
@@ -113,7 +108,6 @@ public class CheckOut extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Button Actions
         homeButton.addActionListener(e -> {
             new CheckOut(user);
             this.dispose();
@@ -164,14 +158,12 @@ public class CheckOut extends JFrame {
             itemsPanel.add(itemRow);
         }
 
-        // Divider
         itemsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         JSeparator separator = new JSeparator();
         separator.setMaximumSize(new Dimension(Integer.MAX_VALUE, 1));
         itemsPanel.add(separator);
         itemsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        // Total
         JPanel totalRow = new JPanel(new BorderLayout());
         totalRow.setOpaque(false);
 
@@ -217,7 +209,6 @@ public class CheckOut extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Full Name
         JLabel nameLabel = new JLabel("Full Name:");
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         gbc.gridx = 0;
@@ -232,7 +223,6 @@ public class CheckOut extends JFrame {
         gbc.weightx = 0.8;
         formPanel.add(nameField, gbc);
 
-        // Phone
         JLabel phoneLabel = new JLabel("Phone Number:");
         phoneLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         gbc.gridx = 0;
@@ -247,7 +237,6 @@ public class CheckOut extends JFrame {
         gbc.weightx = 0.8;
         formPanel.add(phoneField, gbc);
 
-        // Street Address
         JLabel streetLabel = new JLabel("Street Address:");
         streetLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         gbc.gridx = 0;
@@ -262,7 +251,6 @@ public class CheckOut extends JFrame {
         gbc.weightx = 0.8;
         formPanel.add(streetField, gbc);
 
-        // City
         JLabel cityLabel = new JLabel("City:");
         cityLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         gbc.gridx = 0;
@@ -277,7 +265,6 @@ public class CheckOut extends JFrame {
         gbc.weightx = 0.8;
         formPanel.add(cityField, gbc);
 
-        // Province & Postal Code row
         JLabel provinceLabel = new JLabel("Province:");
         provinceLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
         gbc.gridx = 0;
@@ -305,7 +292,7 @@ public class CheckOut extends JFrame {
 
         card.add(formPanel, BorderLayout.CENTER);
 
-        // Store references
+        // Store 
         this.nameField = nameField;
         this.phoneField = phoneField;
         this.streetField = streetField;
@@ -334,7 +321,7 @@ public class CheckOut extends JFrame {
         headerPanel.add(title, BorderLayout.WEST);
         card.add(headerPanel, BorderLayout.NORTH);
 
-        // Payment options
+        // Payment 
         JPanel optionsPanel = new JPanel();
         optionsPanel.setOpaque(false);
         optionsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 50, 20));
@@ -426,6 +413,7 @@ public class CheckOut extends JFrame {
             "Order Confirmation",
             JOptionPane.INFORMATION_MESSAGE);
 
+        new HomePage(user);
         this.dispose();
     }
 

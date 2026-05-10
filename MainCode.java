@@ -526,47 +526,272 @@ class HomePage extends JFrame {
 
     private JPanel createDeliveryProgressPanel() {
         JPanel content = new JPanel();
-        content.setBackground(LIGHT_BG);
-        content.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
-        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setBackground(new Color(242, 240, 238));
+        content.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+        content.setLayout(new BorderLayout(0, 20));
 
-        JPanel progressCard = new RoundedPanel(25);
-        progressCard.setLayout(new BorderLayout());
-        progressCard.setBackground(CARD);
-        progressCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JLabel pageTitle = new JLabel("Track Your Order");
+        pageTitle.setFont(new Font("SansSerif", Font.BOLD, 32));
+        pageTitle.setForeground(new Color(33, 33, 33));
+        content.add(pageTitle, BorderLayout.NORTH);
 
-        JLabel progressTitle = new JLabel("Delivery Progress");
-        progressTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
+        if (user.orders.isEmpty()) {
+            JPanel emptyCard = new RoundedPanel(25);
+            emptyCard.setLayout(new BorderLayout());
+            emptyCard.setBackground(Color.WHITE);
+            emptyCard.setBorder(BorderFactory.createEmptyBorder(40, 20, 40, 20));
+            emptyCard.setMaximumSize(new Dimension(Integer.MAX_VALUE, 200));
+            
+            JLabel emptyLabel = new JLabel("No active orders yet");
+            emptyLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+            emptyLabel.setForeground(Color.GRAY);
+            emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            
+            emptyCard.add(emptyLabel, BorderLayout.CENTER);
+            content.add(emptyCard, BorderLayout.CENTER);
+        } else {
+            // Display the most recent order
+            Order order = user.orders.get(user.orders.size() - 1);
 
-        // Simple progress display
-        JPanel progressPanel = new JPanel();
-        progressPanel.setBackground(CARD);
-        progressPanel.setLayout(new BoxLayout(progressPanel, BoxLayout.Y_AXIS));
+            JPanel mainContainer = new JPanel(new BorderLayout(0, 20));
+            mainContainer.setOpaque(false);
 
-        JLabel orderLabel = new JLabel("Order #502 - North Park Ave (Home)");
-        orderLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+            JPanel statusCard = new RoundedPanel(20);
+            statusCard.setBackground(Color.WHITE);
+            statusCard.setLayout(new BorderLayout());
+            statusCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 30, 20));
 
-        JProgressBar progressBar = new JProgressBar(0, 100);
-        progressBar.setValue(75);
-        progressBar.setStringPainted(true);
-        progressBar.setString("In Transit - 75%");
+            JPanel statusHeader = new JPanel(new BorderLayout());
+            statusHeader.setOpaque(false);
+            JLabel orderId = new JLabel("Order #" + order.orderId);
+            orderId.setFont(new Font("SansSerif", Font.BOLD, 18));
+            JLabel eta = new JLabel("<html><font color='gray'>ETA:</font> <font color='#911010'>" + order.estimatedDelivery + "</font></html>");
+            eta.setFont(new Font("SansSerif", Font.BOLD, 14));
+            statusHeader.add(orderId, BorderLayout.NORTH);
+            statusHeader.add(eta, BorderLayout.SOUTH);
+            statusCard.add(statusHeader, BorderLayout.NORTH);
 
-        JLabel statusLabel = new JLabel("Driver: Sarah Smith | ETA: 15 mins");
-        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        statusLabel.setForeground(Color.GRAY);
+            statusCard.add(createTimelineComponent(order.status), BorderLayout.CENTER);
 
-        progressPanel.add(orderLabel);
-        progressPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        progressPanel.add(progressBar);
-        progressPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        progressPanel.add(statusLabel);
+            mainContainer.add(statusCard, BorderLayout.NORTH);
 
-        progressCard.add(progressTitle, BorderLayout.NORTH);
-        progressCard.add(progressPanel, BorderLayout.CENTER);
+            JPanel bottomRow = new JPanel(new GridLayout(1, 2, 20, 0));
+            bottomRow.setOpaque(false);
 
-        content.add(progressCard);
+            //Rider
+            JPanel riderCard = new RoundedPanel(20);
+            riderCard.setBackground(Color.WHITE);
+            riderCard.setLayout(new BorderLayout(0, 15));
+            riderCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+            JLabel riderTitle = new JLabel("Rider Information");
+            riderTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
+            
+            JPanel riderProfile = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+            riderProfile.setOpaque(false);
+            JPanel riderAvatar = new RoundedPanel(60);
+            riderAvatar.setBackground(new Color(218, 37, 28));
+            riderAvatar.setPreferredSize(new Dimension(60, 60));
+            
+            JPanel riderText = new JPanel(new GridLayout(4, 1, 0, 2));
+            riderText.setOpaque(false);
+            JLabel rName = new JLabel(order.courierName);
+            rName.setFont(new Font("SansSerif", Font.BOLD, 15));
+            JLabel rRating = new JLabel("⭐ 4.9");
+            rRating.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            rRating.setForeground(Color.GRAY);
+            JLabel rPhone = new JLabel("📞 " + order.courierPhone);
+            rPhone.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            JLabel rVehicle = new JLabel("🏍️ Yamaha NMAX 155 | 1234ABC");
+            rVehicle.setFont(new Font("SansSerif", Font.PLAIN, 12));
+            
+            riderText.add(rName);
+            riderText.add(rRating);
+            riderText.add(rPhone);
+            riderText.add(rVehicle);
+            riderProfile.add(riderAvatar);
+            riderProfile.add(riderText);
+
+            JButton contactBtn = new JButton("📞 Contact Rider");
+            stylePrimaryButton(contactBtn);
+
+            riderCard.add(riderTitle, BorderLayout.NORTH);
+            riderCard.add(riderProfile, BorderLayout.CENTER);
+            riderCard.add(contactBtn, BorderLayout.SOUTH);
+
+            //ORDER SUMMARY
+            JPanel summaryCard = new RoundedPanel(20);
+            summaryCard.setBackground(Color.WHITE);
+            summaryCard.setLayout(new BorderLayout(0, 10));
+            summaryCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+            JLabel summaryTitle = new JLabel("Order Summary");
+            summaryTitle.setFont(new Font("SansSerif", Font.BOLD, 16));
+            
+            JPanel itemsList = new JPanel();
+            itemsList.setLayout(new BoxLayout(itemsList, BoxLayout.Y_AXIS));
+            itemsList.setOpaque(false);
+            
+            for (OrderItem item : order.items) {
+                itemsList.add(createSummaryItem(item.name, "x " + item.quantity, "P" + String.format("%.2f", item.getTotal())));
+            }
+
+            JPanel totalRow = new JPanel(new BorderLayout());
+            totalRow.setOpaque(false);
+            totalRow.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
+            JLabel totalText = new JLabel("Total");
+            totalText.setFont(new Font("SansSerif", Font.BOLD, 16));
+            JLabel totalPrice = new JLabel("P" + String.format("%.2f", order.totalAmount));
+            totalPrice.setFont(new Font("SansSerif", Font.BOLD, 18));
+            totalPrice.setForeground(new Color(218, 37, 28));
+            totalRow.add(totalText, BorderLayout.WEST);
+            totalRow.add(totalPrice, BorderLayout.EAST);
+
+            summaryCard.add(summaryTitle, BorderLayout.NORTH);
+            summaryCard.add(itemsList, BorderLayout.CENTER);
+            summaryCard.add(totalRow, BorderLayout.SOUTH);
+
+            bottomRow.add(riderCard);
+            bottomRow.add(summaryCard);
+            mainContainer.add(bottomRow, BorderLayout.CENTER);
+
+            // 4. BACK HOME BUTTON
+            JButton backBtn = new JButton("← Back to Home");
+            backBtn.setContentAreaFilled(false);
+            backBtn.setBorderPainted(false);
+            backBtn.setForeground(Color.GRAY);
+            backBtn.addActionListener(e -> contentLayout.show(contentContainer, "DASHBOARD"));
+            
+            content.add(mainContainer, BorderLayout.CENTER);
+            content.add(backBtn, BorderLayout.SOUTH);
+        }
 
         return content;
+    }
+
+    private JPanel createTimelineComponent(String orderStatus) {
+        JPanel container = new JPanel(new GridLayout(1, 5)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setStroke(new BasicStroke(2));
+                
+                int y = 45;
+                int width = getWidth() / 5;
+                int completedSteps = getCompletedSteps(orderStatus);
+                
+                g2.setColor(new Color(218, 37, 28));
+                if (completedSteps > 0) {
+                    g2.drawLine(width/2, y, width + (width * completedSteps), y);
+                }
+                
+                g2.setColor(Color.LIGHT_GRAY);
+                if (completedSteps < 5) {
+                    g2.drawLine(width + (width * completedSteps), y, getWidth() - (width/2), y);
+                }
+            }
+        };
+        container.setOpaque(false);
+        container.setPreferredSize(new Dimension(0, 100));
+
+        container.add(createTimelineNode("Order Placed", orderStatus.equals("Order placed") || isOrderAfterStatus(orderStatus, "Order placed"), "✓"));
+        container.add(createTimelineNode("Preparing Order", orderStatus.equals("Preparing") || isOrderAfterStatus(orderStatus, "Preparing"), "✓"));
+        container.add(createTimelineNode("Out for Delivery", orderStatus.equals("Shipped") || orderStatus.equals("Out for Delivery") || isOrderAfterStatus(orderStatus, "Shipped"), "3"));
+        container.add(createTimelineNode("Arriving Soon", orderStatus.equals("Arriving") || isOrderAfterStatus(orderStatus, "Arriving"), "4"));
+        container.add(createTimelineNode("Delivered", orderStatus.equals("Delivered"), "5"));
+
+        return container;
+    }
+
+    private int getCompletedSteps(String status) {
+        switch (status) {
+            case "Order placed":
+                return 1;
+            case "Preparing":
+                return 2;
+            case "Shipped":
+            case "Out for Delivery":
+                return 3;
+            case "Arriving":
+                return 4;
+            case "Delivered":
+                return 5;
+            default:
+                return 0;
+        }
+    }
+
+    private boolean isOrderAfterStatus(String current, String reference) {
+        int currentSteps = getCompletedSteps(current);
+        int refSteps = getCompletedSteps(reference);
+        return currentSteps > refSteps;
+    }
+
+    private JPanel createTimelineNode(String text, boolean completed, String step) {
+        JPanel p = new JPanel();
+        p.setOpaque(false);
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        
+        JLabel circle = new JLabel(step, SwingConstants.CENTER) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(completed ? new Color(218, 37, 28) : Color.WHITE);
+                g2.fillOval(0, 0, 30, 30);
+                if(!completed) {
+                    g2.setColor(Color.LIGHT_GRAY);
+                    g2.drawOval(0, 0, 29, 29);
+                }
+                super.paintComponent(g);
+            }
+        };
+        circle.setPreferredSize(new Dimension(30, 30));
+        circle.setMaximumSize(new Dimension(30, 30));
+        circle.setForeground(completed ? Color.WHITE : Color.LIGHT_GRAY);
+        circle.setFont(new Font("SansSerif", Font.BOLD, 12));
+        circle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("SansSerif", Font.PLAIN, 11));
+        label.setForeground(completed ? Color.BLACK : Color.LIGHT_GRAY);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        p.add(Box.createVerticalGlue());
+        p.add(circle);
+        p.add(Box.createRigidArea(new Dimension(0, 8)));
+        p.add(label);
+        p.add(Box.createVerticalGlue());
+        
+        return p;
+    }
+
+    private JPanel createSummaryItem(String name, String qty, String price) {
+        JPanel item = new JPanel(new BorderLayout(10, 0));
+        item.setOpaque(false);
+        item.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        
+        JLabel nameLabel = new JLabel(name);
+        JLabel qtyLabel = new JLabel(qty);
+        qtyLabel.setForeground(Color.GRAY);
+        JLabel priceLabel = new JLabel(price);
+        
+        item.add(nameLabel, BorderLayout.WEST);
+        item.add(qtyLabel, BorderLayout.CENTER);
+        item.add(priceLabel, BorderLayout.EAST);
+        
+        return item;
+    }
+
+    private void stylePrimaryButton(JButton btn) {
+        btn.setBackground(new Color(218, 37, 28));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        btn.setFont(new Font("SansSerif", Font.BOLD, 14));
+        btn.setPreferredSize(new Dimension(0, 45));
     }
 
     private JPanel createStoreListPanel() {
