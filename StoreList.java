@@ -89,19 +89,9 @@ public class StoreList extends JFrame {
         JLabel jollibeeImage = new JLabel();
         jollibeeImage.setHorizontalAlignment(SwingConstants.CENTER);
         try {
-<<<<<<< HEAD
             URL url = new URL("https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg");
             ImageIcon jollibeeIcon = new ImageIcon(url);
             jollibeeImage.setIcon(new ImageIcon(jollibeeIcon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH)));
-=======
-            URL url = new URL("https://images.seeklogo.com/logo-png/7/1/jollibee-logo-png_seeklogo-75962.png"); // Derived direct image from Flickr link
-            ImageIcon jollibeeIcon = new ImageIcon(url);
-            jollibeeButton.setIcon(new ImageIcon(jollibeeIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH))); // Larger restaurant logo
-            jollibeeButton.setHorizontalTextPosition(SwingConstants.CENTER);
-            jollibeeButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-            jollibeeButton.setIconTextGap(15);
-            jollibeeButton.setPreferredSize(new Dimension(260, 240));
->>>>>>> 2658bd7beac212461c1c57ef88a0f48be14d57b9
         } catch (Exception e) {
             jollibeeImage.setText("Logo Not Found");
         }
@@ -138,15 +128,7 @@ public class StoreList extends JFrame {
         try {
             URL url = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
             ImageIcon mcdoIcon = new ImageIcon(url);
-<<<<<<< HEAD
             mcdoImage.setIcon(new ImageIcon(mcdoIcon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH)));
-=======
-            mcdoButton.setIcon(new ImageIcon(mcdoIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH))); // Larger restaurant logo
-            mcdoButton.setHorizontalTextPosition(SwingConstants.CENTER);
-            mcdoButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-            mcdoButton.setIconTextGap(15);
-            mcdoButton.setPreferredSize(new Dimension(260, 240));
->>>>>>> 2658bd7beac212461c1c57ef88a0f48be14d57b9
         } catch (Exception e) {
             mcdoImage.setText("Logo Not Found");
         }
@@ -197,7 +179,7 @@ public class StoreList extends JFrame {
         btn.setMaximumSize(new Dimension(200, 50));
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setBackground(Color.WHITE);
-        btn.setForeground(new Color(80, 80, 80));
+        btn.setForeground(text.equals("Logout") ? Color.RED : new Color(80, 80, 80));
         btn.setFocusPainted(false);
         btn.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         btn.setFont(new Font("SansSerif", Font.BOLD, 14));
