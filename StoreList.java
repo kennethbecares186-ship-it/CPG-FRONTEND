@@ -73,72 +73,21 @@ public class StoreList extends JFrame {
         // Restaurant choices (center)
         JPanel centerPanel = new JPanel();
         centerPanel.setBackground(LIGHT_BG);
-        centerPanel.setLayout(new GridLayout(1, 2, 40, 40));
+        centerPanel.setLayout(new GridLayout(2, 2, 40, 40));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
 
-        // Jollibee button with logo
-        JButton jollibeeButton = new JButton();
-        jollibeeButton.setLayout(new BorderLayout());
-        jollibeeButton.setFont(new Font("SansSerif", Font.BOLD, 24));
-        
-        JPanel jollibeePanel = new JPanel();
-        jollibeePanel.setLayout(new BoxLayout(jollibeePanel, BoxLayout.Y_AXIS));
-        jollibeePanel.setBackground(CARD);
-        jollibeePanel.setOpaque(false);
-        
-        JLabel jollibeeImage = new JLabel();
-        jollibeeImage.setHorizontalAlignment(SwingConstants.CENTER);
-        try {
-            URL url = new URL("https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg");
-            ImageIcon jollibeeIcon = new ImageIcon(url);
-            jollibeeImage.setIcon(new ImageIcon(jollibeeIcon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH)));
-        } catch (Exception e) {
-            jollibeeImage.setText("Logo Not Found");
-        }
-        
-        jollibeeImage.setAlignmentX(Component.CENTER_ALIGNMENT);
-        jollibeePanel.add(Box.createVerticalGlue());
-        jollibeePanel.add(jollibeeImage);
-        jollibeePanel.add(Box.createVerticalGlue());
-        
-        jollibeeButton.add(jollibeePanel, BorderLayout.CENTER);
-        jollibeeButton.setBackground(CARD);
-        jollibeeButton.setFocusPainted(false);
-        centerPanel.add(jollibeeButton);
+        JButton jollibeeButton = createRestaurantButton("Jollibee", "https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg");
+        JButton mcdoButton = createRestaurantButton("McDo", "https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
+        JButton starbucksButton = createRestaurantButton("Starbucks", "https://upload.wikimedia.org/wikipedia/sco/thumb/4/45/Starbucks_Coffee_Logo.svg/1200px-Starbucks_Coffee_Logo.svg.png");
+        JButton dunkinButton = createRestaurantButton("Dunkin'", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Dunkin%27_%28logo%29.svg/2560px-Dunkin%27_%28logo%29.svg.png");
 
-        // McDo button with logo
-        JButton mcdoButton = new JButton();
-        mcdoButton.setLayout(new BorderLayout());
-        mcdoButton.setFont(new Font("SansSerif", Font.BOLD, 24));
-        
-        JPanel mcdoPanel = new JPanel();
-        mcdoPanel.setLayout(new BoxLayout(mcdoPanel, BoxLayout.Y_AXIS));
-        mcdoPanel.setBackground(CARD);
-        mcdoPanel.setOpaque(false);
-        
-        JLabel mcdoImage = new JLabel();
-        mcdoImage.setHorizontalAlignment(SwingConstants.CENTER);
-        try {
-            URL url = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
-            ImageIcon mcdoIcon = new ImageIcon(url);
-            mcdoImage.setIcon(new ImageIcon(mcdoIcon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH)));
-        } catch (Exception e) {
-            mcdoImage.setText("Logo Not Found");
-        }
-        
-        mcdoImage.setAlignmentX(Component.CENTER_ALIGNMENT);
-        mcdoPanel.add(Box.createVerticalGlue());
-        mcdoPanel.add(mcdoImage);
-        mcdoPanel.add(Box.createVerticalGlue());
-        
-        mcdoButton.add(mcdoPanel, BorderLayout.CENTER);
-        mcdoButton.setBackground(CARD);
-        mcdoButton.setFocusPainted(false);
+        centerPanel.add(jollibeeButton);
         centerPanel.add(mcdoButton);
+        centerPanel.add(starbucksButton);
+        centerPanel.add(dunkinButton);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        // Action listeners for restaurant buttons
         jollibeeButton.addActionListener(e -> {
             lastRestaurant = "Jollibee";
             new RestaurantFrame(user, "Jollibee").setVisible(true);
@@ -147,8 +96,15 @@ public class StoreList extends JFrame {
             lastRestaurant = "McDo";
             new RestaurantFrame(user, "McDo").setVisible(true);
         });
+        starbucksButton.addActionListener(e -> {
+            lastRestaurant = "Starbucks";
+            new RestaurantFrame(user, "Starbucks").setVisible(true);
+        });
+        dunkinButton.addActionListener(e -> {
+            lastRestaurant = "Dunkin'";
+            new RestaurantFrame(user, "Dunkin'").setVisible(true);
+        });
 
-        // Back button action
         backButton.addActionListener(e -> {
             if (lastRestaurant != null) {
                 new RestaurantFrame(user, lastRestaurant).setVisible(true);
@@ -158,6 +114,37 @@ public class StoreList extends JFrame {
         });
 
         add(mainPanel, BorderLayout.CENTER);
+    }
+
+    private JButton createRestaurantButton(String restaurantName, String imageUrl) {
+        JButton button = new JButton();
+        button.setLayout(new BorderLayout());
+        button.setFont(new Font("SansSerif", Font.BOLD, 24));
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(CARD);
+        panel.setOpaque(false);
+
+        JLabel imageLabel = new JLabel();
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        try {
+            URL url = new URL(imageUrl);
+            ImageIcon icon = new ImageIcon(url);
+            imageLabel.setIcon(new ImageIcon(icon.getImage().getScaledInstance(220, 220, Image.SCALE_SMOOTH)));
+        } catch (Exception e) {
+            imageLabel.setText("Logo Not Found");
+        }
+
+        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(Box.createVerticalGlue());
+        panel.add(imageLabel);
+        panel.add(Box.createVerticalGlue());
+
+        button.add(panel, BorderLayout.CENTER);
+        button.setBackground(CARD);
+        button.setFocusPainted(false);
+        return button;
     }
 
     private void addNavButton(JPanel panel, String text) {
@@ -181,7 +168,7 @@ public class StoreList extends JFrame {
 
     private double extractPrice(String priceString) {
         try {
-            return Double.parseDouble(priceString.replace("₱", "").trim());
+            return Double.parseDouble(priceString.replace("\u20b1", "").trim());
         } catch (NumberFormatException e) {
             return 0.0;
         }
@@ -192,6 +179,7 @@ public class StoreList extends JFrame {
         private final User user;
         private List<OrderItem> cart = new ArrayList<>();
         private JPanel cartItemsPanel;
+
         public RestaurantFrame(User user, String restaurant) {
             this.user = user;
             setTitle("MoveEat - " + restaurant + " Menu");
@@ -203,7 +191,6 @@ public class StoreList extends JFrame {
             setLayout(new BorderLayout());
             getContentPane().setBackground(LIGHT_BG);
 
-            // Sidebar (reuse design)
             JPanel sidebar = new JPanel();
             sidebar.setPreferredSize(new Dimension(220, 700));
             sidebar.setBackground(SIDEBAR);
@@ -226,11 +213,9 @@ public class StoreList extends JFrame {
 
             add(sidebar, BorderLayout.WEST);
 
-            // Main area
             JPanel mainPanel = new JPanel(new BorderLayout());
             mainPanel.setBackground(LIGHT_BG);
 
-            // Header with restaurant logo and name
             JPanel header = new JPanel(new BorderLayout());
             header.setBackground(LIGHT_BG);
             header.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
@@ -239,7 +224,16 @@ public class StoreList extends JFrame {
             leftHeader.setOpaque(false);
             JLabel restLogo = new JLabel();
             try {
-                URL logoUrl = restaurant.equals("Jollibee") ? new URL("https://images.seeklogo.com/logo-png/7/1/jollibee-logo-png_seeklogo-75962.png") : new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
+                URL logoUrl;
+                if (restaurant.equals("Jollibee")) {
+                    logoUrl = new URL("https://images.seeklogo.com/logo-png/7/1/jollibee-logo-png_seeklogo-75962.png");
+                } else if (restaurant.equals("McDo")) {
+                    logoUrl = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
+                } else if (restaurant.equals("Starbucks")) {
+                    logoUrl = new URL("https://upload.wikimedia.org/wikipedia/sco/thumb/4/45/Starbucks_Coffee_Logo.svg/1200px-Starbucks_Coffee_Logo.svg.png");
+                } else {
+                    logoUrl = new URL("https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Dunkin%27_%28logo%29.svg/2560px-Dunkin%27_%28logo%29.svg.png");
+                }
                 ImageIcon icon = new ImageIcon(logoUrl);
                 restLogo.setIcon(new ImageIcon(icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH))); // Increased from 60x60 to 80x80
             } catch (Exception e) {
@@ -251,7 +245,6 @@ public class StoreList extends JFrame {
             leftHeader.add(restName);
             header.add(leftHeader, BorderLayout.WEST);
 
-            // Back button at the top right
             JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
             navPanel.setOpaque(false);
             JButton backButton = new JButton("Back");
@@ -260,24 +253,30 @@ public class StoreList extends JFrame {
 
             mainPanel.add(header, BorderLayout.NORTH);
 
-            // Food items in card panels
             JPanel foodPanel = new JPanel(new GridLayout(1, 3, 40, 40));
             foodPanel.setBackground(LIGHT_BG);
             foodPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
 
             if (restaurant.equals("Jollibee")) {
-                foodPanel.add(createFoodCard("Chickenjoy", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVSs2VmuBtUQYNPdT_SEMCq5snDSKig8y2nA&s", "₱99")); // Placeholder; replace with direct Chickenjoy URL
-                foodPanel.add(createFoodCard("Jolly Spaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJOmN-B_Fiq1bx1leYjBNGkhLZ_S-IYSBmkQ&s", "₱79")); // Placeholder; replace with direct URL
-                foodPanel.add(createFoodCard("Burger Steak", "https://www.jollibeefoods.com/_next/image?url=https%3A%2F%2Folo-images-live.imgix.net%2F02%2F023d7994bd1e46a2aac95c11c1833a73.jpg%3Fauto%3Dformat%252Ccompress%26q%3D60%26cs%3Dtinysrgb%26w%3D1200%26h%3D800%26fit%3Dfill%26fm%3Dpng32%26bg%3Dtransparent%26s%3D966c5b696ebf78b634eee98ce089c190&w=1920&q=75", "₱89")); // Direct from PNGEgg
+                foodPanel.add(createFoodCard("Chickenjoy", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVSs2VmuBtUQYNPdT_SEMCq5snDSKig8y2nA&s", "\u20b199"));
+                foodPanel.add(createFoodCard("Jolly Spaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJOmN-B_Fiq1bx1leYjBNGkhLZ_S-IYSBmkQ&s", "\u20b179"));
+                foodPanel.add(createFoodCard("Burger Steak", "https://www.jollibeefoods.com/_next/image?url=https%3A%2F%2Folo-images-live.imgix.net%2F02%2F023d7994bd1e46a2aac95c11c1833a73.jpg%3Fauto%3Dformat%252Ccompress%26q%3D60%26cs%3Dtinysrgb%26w%3D1200%26h%3D800%26fit%3Dfill%26fm%3Dpng32%26bg%3Dtransparent%26s%3D966c5b696ebf78b634eee98ce089c190&w=1920&q=75", "\u20b189"));
             } else if (restaurant.equals("McDo")) {
-                foodPanel.add(createFoodCard("Big Mac", "https://s7d1.scene7.com/is/image/mcdonalds/DC_202302_0005-999_BigMac_1564x1564-1:product-header-mobile?wid=1313&hei=1313&dpr=off", "₱149")); // Placeholder; replace with direct URL
-                foodPanel.add(createFoodCard("McSpaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZRLGmYoD9kfyt10_KoCSymY9M7V2lnxh-Jg&s", "₱59")); // Placeholder; replace with direct URL
-                foodPanel.add(createFoodCard("Fries", "https://s7d1.scene7.com/is/image/mcdonalds/mcdonalds-fries-medium:1-3-product-tile-desktop?wid=829&hei=515&dpr=off", "₱49")); // Placeholder; replace with direct URL
+                foodPanel.add(createFoodCard("Big Mac", "https://s7d1.scene7.com/is/image/mcdonalds/DC_202302_0005-999_BigMac_1564x1564-1:product-header-mobile?wid=1313&hei=1313&dpr=off", "\u20b1149"));
+                foodPanel.add(createFoodCard("McSpaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZRLGmYoD9kfyt10_KoCSymY9M7V2lnxh-Jg&s", "\u20b159"));
+                foodPanel.add(createFoodCard("Fries", "https://s7d1.scene7.com/is/image/mcdonalds/mcdonalds-fries-medium:1-3-product-tile-desktop?wid=829&hei=515&dpr=off", "\u20b149"));
+            } else if (restaurant.equals("Starbucks")) {
+                foodPanel.add(createFoodCard("Caffe Latte", "https://content.prod.cms.rt.microsoft.com/cms/api/am/imageFileData/RWuyZj?ver=4f3a", "\u20b1180"));
+                foodPanel.add(createFoodCard("Caramel Macchiato", "https://content-prod-live.cert.starbucks.com/binary/v2/asset/137-66177.png", "\u20b1210"));
+                foodPanel.add(createFoodCard("Blueberry Muffin", "https://www.starbucks.com/weblx/images/rewards/muffin.png", "\u20b1120"));
+            } else {
+                foodPanel.add(createFoodCard("Donut", "https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg", "\u20b190"));
+                foodPanel.add(createFoodCard("Coffee", "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg", "\u20b1150"));
+                foodPanel.add(createFoodCard("Bagel", "https://images.pexels.com/photos/374885/pexels-photo-374885.jpeg", "\u20b1110"));
             }
 
             mainPanel.add(foodPanel, BorderLayout.CENTER);
 
-            // Cart panel
             JPanel cartPanel = new JPanel(new BorderLayout());
             cartPanel.setBackground(LIGHT_BG);
             cartPanel.setBorder(BorderFactory.createEmptyBorder(20, 60, 20, 60));
@@ -313,7 +312,6 @@ public class StoreList extends JFrame {
 
             mainPanel.add(cartPanel, BorderLayout.SOUTH);
 
-            // Back button action
             backButton.addActionListener(e -> dispose());
 
             add(mainPanel, BorderLayout.CENTER);
@@ -401,10 +399,10 @@ public class StoreList extends JFrame {
                 JLabel qty = new JLabel("Qty: " + item.quantity);
                 qty.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-                JLabel price = new JLabel("₱" + String.format("%.2f", item.price));
+                JLabel price = new JLabel("\u20b1" + String.format("%.2f", item.price));
                 price.setFont(new Font("SansSerif", Font.PLAIN, 12));
 
-                JLabel total = new JLabel("₱" + String.format("%.2f", item.getTotal()));
+                JLabel total = new JLabel("\u20b1" + String.format("%.2f", item.getTotal()));
                 total.setFont(new Font("SansSerif", Font.BOLD, 14));
                 total.setForeground(PRIMARY);
 

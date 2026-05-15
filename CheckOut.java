@@ -1,9 +1,15 @@
 import java.awt.*;
+import java.awt.event.*;
+import java.net.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.table.*;
 
-public class CheckOut extends JFrame {
+class CheckOut extends JFrame {
 
     private final Color PRIMARY = new Color(186, 55, 78);
     private final Color LIGHT_BG = new Color(248, 240, 240);
