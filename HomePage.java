@@ -1,9 +1,5 @@
 import java.awt.*;
-import java.awt.event.*;
 import java.net.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -102,10 +98,10 @@ class HomePage extends JFrame {
                 contentLayout.show(contentContainer, "MANAGE_DELIVERIES");
             }
         } else {
-            contentContainer.add(createStoreListPanel(), "STORE_LIST");
             contentContainer.add(createOrderHistoryPanel(), "ORDER_HISTORY");
             contentContainer.add(createDeliveryProgressPanel(), "DELIVERY_PROGRESS");
         }
+
 
         mainPanel.add(header, BorderLayout.NORTH);
         mainPanel.add(contentContainer, BorderLayout.CENTER);
@@ -576,7 +572,7 @@ class HomePage extends JFrame {
         btn.setPreferredSize(new Dimension(0, 45));
     }
 
-    private JPanel createStoreListPanel() {
+    public JPanel createStoreListPanel() {
         JPanel storePanel = new JPanel(new CardLayout());
         storePanel.setBackground(LIGHT_BG);
 
@@ -1188,10 +1184,9 @@ class HomePage extends JFrame {
                 new MainCode();
                 this.dispose();
             });
-        } else if (text.equals("Store List")) {
-            btn.addActionListener(e -> contentLayout.show(contentContainer, "STORE_LIST"));
         } else if (text.equals("Dashboard")) {
             btn.addActionListener(e -> contentLayout.show(contentContainer, "DASHBOARD"));
+
         } else if (text.equals("Manage Deliveries")) {
             btn.addActionListener(e -> contentLayout.show(contentContainer, "MANAGE_DELIVERIES"));
         } else if (text.equals("Fleet Tracking")) {
@@ -1202,7 +1197,14 @@ class HomePage extends JFrame {
             btn.addActionListener(e -> contentLayout.show(contentContainer, "ORDER_HISTORY"));
         } else if (text.equals("Delivery Progress")) {
             btn.addActionListener(e -> contentLayout.show(contentContainer, "DELIVERY_PROGRESS"));
+        } else if (text.equals("Store List")) {
+            btn.addActionListener(e -> {
+                // Open the standalone StoreList UI and pass the current user session
+                new StoreList(user).setVisible(true);
+                this.dispose();
+            });
         }
+
 
         panel.add(btn);
         panel.add(Box.createRigidArea(new Dimension(0, 15)));

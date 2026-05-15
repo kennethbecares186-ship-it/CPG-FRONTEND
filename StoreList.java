@@ -57,9 +57,31 @@ public class StoreList extends JFrame {
         header.setBackground(LIGHT_BG);
         header.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
+        JPanel titlePanel = new JPanel();
+        titlePanel.setOpaque(false);
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+
         JLabel title = new JLabel("Select a Restaurant");
         title.setFont(new Font("SansSerif", Font.BOLD, 28));
-        header.add(title, BorderLayout.WEST);
+
+        JLabel categoryHeader = new JLabel("Fast Food & Beverages");
+        categoryHeader.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        categoryHeader.setForeground(new Color(100, 100, 100));
+
+        JLabel selectedHeader = new JLabel("Selected: None");
+        selectedHeader.setFont(new Font("SansSerif", Font.BOLD, 16));
+        selectedHeader.setForeground(PRIMARY);
+
+
+        titlePanel.add(title);
+        titlePanel.add(Box.createRigidArea(new Dimension(0, 6)));
+        titlePanel.add(categoryHeader);
+        titlePanel.add(Box.createRigidArea(new Dimension(0, 8)));
+        titlePanel.add(selectedHeader);
+
+
+        header.add(titlePanel, BorderLayout.WEST);
+
 
         // Back button at the top right
         JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -76,10 +98,11 @@ public class StoreList extends JFrame {
         centerPanel.setLayout(new GridLayout(2, 2, 40, 40));
         centerPanel.setBorder(BorderFactory.createEmptyBorder(60, 60, 60, 60));
 
-        JButton jollibeeButton = createRestaurantButton("Jollibee", "https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg");
-        JButton mcdoButton = createRestaurantButton("McDo", "https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
-        JButton starbucksButton = createRestaurantButton("Starbucks", "https://upload.wikimedia.org/wikipedia/sco/thumb/4/45/Starbucks_Coffee_Logo.svg/1200px-Starbucks_Coffee_Logo.svg.png");
-        JButton dunkinButton = createRestaurantButton("Dunkin'", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Dunkin%27_%28logo%29.svg/2560px-Dunkin%27_%28logo%29.svg.png");
+        JButton jollibeeButton = createRestaurantButton("Jollibee", "https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg", "Fast Foods");
+        JButton mcdoButton = createRestaurantButton("McDo", "https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png", "Fast Foods");
+        JButton starbucksButton = createRestaurantButton("Starbucks", "https://upload.wikimedia.org/wikipedia/sco/thumb/4/45/Starbucks_Coffee_Logo.svg/1200px-Starbucks_Coffee_Logo.svg.png", "Beverages & Desserts");
+        JButton dunkinButton = createRestaurantButton("Dunkin'", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Dunkin%27_%28logo%29.svg/2560px-Dunkin%27_%28logo%29.svg.png", "Beverages & Desserts");
+
 
         centerPanel.add(jollibeeButton);
         centerPanel.add(mcdoButton);
@@ -90,20 +113,25 @@ public class StoreList extends JFrame {
 
         jollibeeButton.addActionListener(e -> {
             lastRestaurant = "Jollibee";
+            selectedHeader.setText("Selected: Jollibee (Fast Foods)");
             new RestaurantFrame(user, "Jollibee").setVisible(true);
         });
         mcdoButton.addActionListener(e -> {
             lastRestaurant = "McDo";
+            selectedHeader.setText("Selected: McDo (Fast Foods)");
             new RestaurantFrame(user, "McDo").setVisible(true);
         });
         starbucksButton.addActionListener(e -> {
             lastRestaurant = "Starbucks";
+            selectedHeader.setText("Selected: Starbucks (Beverages & Desserts)");
             new RestaurantFrame(user, "Starbucks").setVisible(true);
         });
         dunkinButton.addActionListener(e -> {
             lastRestaurant = "Dunkin'";
+            selectedHeader.setText("Selected: Dunkin' (Beverages & Desserts)");
             new RestaurantFrame(user, "Dunkin'").setVisible(true);
         });
+
 
         backButton.addActionListener(e -> {
             if (lastRestaurant != null) {
@@ -116,8 +144,9 @@ public class StoreList extends JFrame {
         add(mainPanel, BorderLayout.CENTER);
     }
 
-    private JButton createRestaurantButton(String restaurantName, String imageUrl) {
+    private JButton createRestaurantButton(String restaurantName, String imageUrl, String categoryLabel) {
         JButton button = new JButton();
+
         button.setLayout(new BorderLayout());
         button.setFont(new Font("SansSerif", Font.BOLD, 24));
 
@@ -137,9 +166,17 @@ public class StoreList extends JFrame {
         }
 
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel categoryLabelView = new JLabel(categoryLabel);
+        categoryLabelView.setFont(new Font("SansSerif", Font.BOLD, 14));
+        categoryLabelView.setForeground(new Color(120, 25, 45));
+        categoryLabelView.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         panel.add(Box.createVerticalGlue());
         panel.add(imageLabel);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(categoryLabelView);
         panel.add(Box.createVerticalGlue());
+
 
         button.add(panel, BorderLayout.CENTER);
         button.setBackground(CARD);
@@ -241,9 +278,22 @@ public class StoreList extends JFrame {
             }
             JLabel restName = new JLabel((restaurant.equals("McDo") ? "McDonald's" : restaurant) + " Menu");
             restName.setFont(new Font("SansSerif", Font.BOLD, 28));
+
+            JLabel restMeta = new JLabel(getCategoryLabelForRestaurant(restaurant));
+
+            restMeta.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            restMeta.setForeground(new Color(100, 100, 100));
+
+            JPanel metaPanel = new JPanel();
+            metaPanel.setLayout(new BoxLayout(metaPanel, BoxLayout.Y_AXIS));
+            metaPanel.setOpaque(false);
+            metaPanel.add(restName);
+            metaPanel.add(restMeta);
+
             leftHeader.add(restLogo);
-            leftHeader.add(restName);
+            leftHeader.add(metaPanel);
             header.add(leftHeader, BorderLayout.WEST);
+
 
             JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
             navPanel.setOpaque(false);
@@ -392,7 +442,6 @@ public class StoreList extends JFrame {
                 JPanel row = new JPanel(new BorderLayout());
                 row.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
                 row.setBackground(Color.WHITE);
-
                 JLabel name = new JLabel(item.name);
                 name.setFont(new Font("SansSerif", Font.BOLD, 14));
 
@@ -437,9 +486,23 @@ public class StoreList extends JFrame {
         }
     }
 
+    private String getCategoryLabelForRestaurant(String restaurant) {
+        switch (restaurant) {
+            case "Jollibee":
+            case "McDo":
+                return "Category: Fast Foods";
+            case "Starbucks":
+            case "Dunkin'":
+                return "Category: Beverages & Desserts";
+            default:
+                return "Category: Restaurant";
+        }
+    }
+
     // Main method for testing
     public static void main(String[] args) {
         // For testing, pass a dummy user
         SwingUtilities.invokeLater(() -> new StoreList(new User("TestUser", "CUSTOMER", false)).setVisible(true));
     }
+
 }

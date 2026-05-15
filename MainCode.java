@@ -97,7 +97,7 @@ public class MainCode extends JFrame {
         JPanel rightPanel = new JPanel(new GridBagLayout());
         rightPanel.setBackground(LIGHT_BG);
 
-        // LOGINB CARD
+        // LOGIN CARD
         JPanel formCard = new JPanel();
         formCard.setPreferredSize(new Dimension(500, 600));
         formCard.setBackground(WHITE);
