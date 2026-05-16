@@ -12,6 +12,7 @@ public class StoreList extends JFrame {
     private final Color SIDEBAR = new Color(120, 25, 45);
     private final User user;
     private String lastRestaurant = null;
+    private final List<OrderItem> cart = new ArrayList<>();
 
     public StoreList(User user) {
         this.user = user;
@@ -100,8 +101,8 @@ public class StoreList extends JFrame {
 
         JButton jollibeeButton = createRestaurantButton("Jollibee", "https://live.staticflickr.com/3132/2906289773_83c466e953_q.jpg", "Fast Foods");
         JButton mcdoButton = createRestaurantButton("McDo", "https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png", "Fast Foods");
-        JButton starbucksButton = createRestaurantButton("Starbucks", "https://upload.wikimedia.org/wikipedia/sco/thumb/4/45/Starbucks_Coffee_Logo.svg/1200px-Starbucks_Coffee_Logo.svg.png", "Beverages & Desserts");
-        JButton dunkinButton = createRestaurantButton("Dunkin'", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Dunkin%27_%28logo%29.svg/2560px-Dunkin%27_%28logo%29.svg.png", "Beverages & Desserts");
+        JButton starbucksButton = createRestaurantButton("Starbucks", "https://mcdonough.com/wp-content/uploads/2020/09/starbucks-logo-png-transparent.png", "Beverages & Desserts");
+        JButton dunkinButton = createRestaurantButton("Dunkin'", "https://vectorseek.com/wp-content/uploads/2025/01/Dunkin-Donuts-Badge-Logo-Vector.svg--300x300.png", "Beverages & Desserts");
 
 
         centerPanel.add(jollibeeButton);
@@ -114,28 +115,28 @@ public class StoreList extends JFrame {
         jollibeeButton.addActionListener(e -> {
             lastRestaurant = "Jollibee";
             selectedHeader.setText("Selected: Jollibee (Fast Foods)");
-            new RestaurantFrame(user, "Jollibee").setVisible(true);
+            new RestaurantFrame(user, "Jollibee", cart).setVisible(true);
         });
         mcdoButton.addActionListener(e -> {
             lastRestaurant = "McDo";
             selectedHeader.setText("Selected: McDo (Fast Foods)");
-            new RestaurantFrame(user, "McDo").setVisible(true);
+            new RestaurantFrame(user, "McDo", cart).setVisible(true);
         });
         starbucksButton.addActionListener(e -> {
             lastRestaurant = "Starbucks";
             selectedHeader.setText("Selected: Starbucks (Beverages & Desserts)");
-            new RestaurantFrame(user, "Starbucks").setVisible(true);
+            new RestaurantFrame(user, "Starbucks", cart).setVisible(true);
         });
         dunkinButton.addActionListener(e -> {
             lastRestaurant = "Dunkin'";
             selectedHeader.setText("Selected: Dunkin' (Beverages & Desserts)");
-            new RestaurantFrame(user, "Dunkin'").setVisible(true);
+            new RestaurantFrame(user, "Dunkin'", cart).setVisible(true);
         });
 
 
         backButton.addActionListener(e -> {
             if (lastRestaurant != null) {
-                new RestaurantFrame(user, lastRestaurant).setVisible(true);
+                new RestaurantFrame(user, lastRestaurant, cart).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Please select a restaurant first.", "Info", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -214,11 +215,12 @@ public class StoreList extends JFrame {
     // RestaurantFrame inner class
     class RestaurantFrame extends JFrame {
         private final User user;
-        private List<OrderItem> cart = new ArrayList<>();
+        private final List<OrderItem> cart;
         private JPanel cartItemsPanel;
 
-        public RestaurantFrame(User user, String restaurant) {
+        public RestaurantFrame(User user, String restaurant, List<OrderItem> cart) {
             this.user = user;
+            this.cart = cart;
             setTitle("MoveEat - " + restaurant + " Menu");
 
             setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize immediately for restaurant frame
@@ -267,9 +269,9 @@ public class StoreList extends JFrame {
                 } else if (restaurant.equals("McDo")) {
                     logoUrl = new URL("https://pngimg.com/uploads/mcdonalds/mcdonalds_PNG1.png");
                 } else if (restaurant.equals("Starbucks")) {
-                    logoUrl = new URL("https://upload.wikimedia.org/wikipedia/sco/thumb/4/45/Starbucks_Coffee_Logo.svg/1200px-Starbucks_Coffee_Logo.svg.png");
+                    logoUrl = new URL("https://mcdonough.com/wp-content/uploads/2020/09/starbucks-logo-png-transparent.png");
                 } else {
-                    logoUrl = new URL("https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Dunkin%27_%28logo%29.svg/2560px-Dunkin%27_%28logo%29.svg.png");
+                    logoUrl = new URL("https://vectorseek.com/wp-content/uploads/2025/01/Dunkin-Donuts-Badge-Logo-Vector.svg--300x300.png");
                 }
                 ImageIcon icon = new ImageIcon(logoUrl);
                 restLogo.setIcon(new ImageIcon(icon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH))); // Increased from 60x60 to 80x80
@@ -316,31 +318,35 @@ public class StoreList extends JFrame {
                 foodPanel.add(createFoodCard("McSpaghetti", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTZRLGmYoD9kfyt10_KoCSymY9M7V2lnxh-Jg&s", "\u20b159"));
                 foodPanel.add(createFoodCard("Fries", "https://s7d1.scene7.com/is/image/mcdonalds/mcdonalds-fries-medium:1-3-product-tile-desktop?wid=829&hei=515&dpr=off", "\u20b149"));
             } else if (restaurant.equals("Starbucks")) {
-                foodPanel.add(createFoodCard("Caffe Latte", "https://content.prod.cms.rt.microsoft.com/cms/api/am/imageFileData/RWuyZj?ver=4f3a", "\u20b1180"));
-                foodPanel.add(createFoodCard("Caramel Macchiato", "https://content-prod-live.cert.starbucks.com/binary/v2/asset/137-66177.png", "\u20b1210"));
-                foodPanel.add(createFoodCard("Blueberry Muffin", "https://www.starbucks.com/weblx/images/rewards/muffin.png", "\u20b1120"));
+                foodPanel.add(createFoodCard("Caffe Latte", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnyIy7r7LywDZ6bJjuRteCs7La2oxbjP3aSA&s", "\u20b1180"));
+                foodPanel.add(createFoodCard("Caramel Macchiato", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZgO2y7szDOa9Tq5qROs9k5M5cf2HoMrIwww&s", "\u20b1210"));
+                foodPanel.add(createFoodCard("Blueberry Muffin", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNL9uCLD9W6NJwxpNC-5LtFXMktrYH-dLgTQ&s", "\u20b1120"));
             } else {
-                foodPanel.add(createFoodCard("Donut", "https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg", "\u20b190"));
-                foodPanel.add(createFoodCard("Coffee", "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg", "\u20b1150"));
-                foodPanel.add(createFoodCard("Bagel", "https://images.pexels.com/photos/374885/pexels-photo-374885.jpeg", "\u20b1110"));
+                foodPanel.add(createFoodCard("Donut", "https://w7.pngwing.com/pngs/371/702/png-transparent-stack-of-assorted-flavored-doughnuts-dunkin-donuts-coffee-and-doughnuts-iced-coffee-krispy-kreme-donuts-baked-goods-food-fast-food-restaurant-thumbnail.png", "\u20b190"));
+                foodPanel.add(createFoodCard("Coffee", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdN9R5-RLIu1zJoD0GD0t7cz6fDs5oWY-k7w&s", "\u20b1150"));
+                foodPanel.add(createFoodCard("Bagel", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2o7UrQ7ZynsYNf08tvR9149iaP2TE2rnHtw&s", "\u20b1110"));
             }
 
             mainPanel.add(foodPanel, BorderLayout.CENTER);
 
             JPanel cartPanel = new JPanel(new BorderLayout());
             cartPanel.setBackground(LIGHT_BG);
-            cartPanel.setBorder(BorderFactory.createEmptyBorder(20, 60, 20, 60));
+            cartPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
             JLabel cartTitle = new JLabel("Your Cart");
             cartTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
             cartPanel.add(cartTitle, BorderLayout.NORTH);
 
             cartItemsPanel = new JPanel();
+            // Keep items tightly packed; we control per-row spacing in updateCartDisplay()
             cartItemsPanel.setLayout(new BoxLayout(cartItemsPanel, BoxLayout.Y_AXIS));
             cartItemsPanel.setBackground(Color.WHITE);
+            cartItemsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
             JScrollPane cartScroll = new JScrollPane(cartItemsPanel);
             cartScroll.setPreferredSize(new Dimension(0, 200)); // Set height
+            cartScroll.setBorder(BorderFactory.createEmptyBorder());
             cartPanel.add(cartScroll, BorderLayout.CENTER);
+
 
             JPanel cartBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             JButton proceedButton = new JButton("Proceed to Checkout");
@@ -440,9 +446,11 @@ public class StoreList extends JFrame {
             cartItemsPanel.removeAll();
             for (OrderItem item : cart) {
                 JPanel row = new JPanel(new BorderLayout());
-                row.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                // Tight spacing between cart rows (helps when picking the first few items)
+                row.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
                 row.setBackground(Color.WHITE);
                 JLabel name = new JLabel(item.name);
+
                 name.setFont(new Font("SansSerif", Font.BOLD, 14));
 
                 JLabel qty = new JLabel("Qty: " + item.quantity);

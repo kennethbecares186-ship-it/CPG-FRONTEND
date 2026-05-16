@@ -52,7 +52,7 @@ class HomePage extends JFrame {
         if (user.role.equals("ADMIN")) {
             addNavButton(sidebar, "Manage Deliveries");
             addNavButton(sidebar, "Fleet Tracking");
-            addNavButton(sidebar, "User Management");
+            addNavButton(sidebar, "Deliverer Management");
         } else {
             addNavButton(sidebar, "Store List");
             addNavButton(sidebar, "My Order History");
@@ -153,7 +153,8 @@ class HomePage extends JFrame {
 
             statsPanel.add(createStatCard("128", "Active Orders"));
             statsPanel.add(createStatCard("34", "Drivers Online"));
-            statsPanel.add(createStatCard("96%", "Success Rate"));
+            // Star rating instead of success rate
+            statsPanel.add(createStatCard("4.8★", "Star Rating"));
 
             content.add(statsPanel);
             content.add(Box.createRigidArea(new Dimension(0, 25)));
@@ -171,16 +172,16 @@ class HomePage extends JFrame {
         String[] columns = {"Order ID", "Address", "Status", "Driver"};
         Object[][] data;
 
-        if (user.role.equals("ADMIN")) {
-            data = new Object[][]{
-                {"#501", "Downtown - Central", "Pending", "John Doe"},
-                {"#502", "North Park Ave", "In Transit", "Sarah Smith"},
-                {"#503", "South Side Mall", "Delivered", "Mike Ross"}
-            };
+        if (user.orders == null || user.orders.isEmpty()) {
+            // Empty for now; show placeholder label instead
+            data = new Object[0][0];
         } else {
-            data = new Object[][]{
-                {"#502", "North Park Ave (Home)", "In Transit", "Sarah Smith"}
-            };
+            // Keep existing behavior for real data
+            if (user.role.equals("ADMIN")) {
+                data = new Object[][]{};
+            } else {
+                data = new Object[][]{};
+            }
         }
 
         DefaultTableModel tableModel = new DefaultTableModel(data, columns) {
@@ -200,7 +201,17 @@ class HomePage extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         tableCard.add(tableTitle, BorderLayout.NORTH);
-        tableCard.add(scrollPane, BorderLayout.CENTER);
+
+        // Delivery overview empty placeholder
+        if (user.orders == null || user.orders.isEmpty()) {
+            JLabel emptyOverview = new JLabel("No deliveries yet");
+            emptyOverview.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            emptyOverview.setForeground(Color.GRAY);
+            emptyOverview.setHorizontalAlignment(SwingConstants.CENTER);
+            tableCard.add(emptyOverview, BorderLayout.CENTER);
+        } else {
+            tableCard.add(scrollPane, BorderLayout.CENTER);
+        }
 
         content.add(tableCard);
         content.add(Box.createRigidArea(new Dimension(0, 25)));
@@ -930,14 +941,18 @@ class HomePage extends JFrame {
         JLabel deliveriesTitle = new JLabel("Manage Deliveries");
         deliveriesTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
 
+        // Empty contents initially
         String[] columns = {"Order ID", "Address", "Status", "Driver", "Actions"};
-        Object[][] data = {
-            {"#501", "Downtown - Central", "Pending", "John Doe", "Assign/Reassign"},
-            {"#502", "North Park Ave", "In Transit", "Sarah Smith", "Update Status"},
-            {"#503", "South Side Mall", "Delivered", "Mike Ross", "View Details"}
-        };
+        Object[][] data = new Object[0][0];
+
+        // Placeholder label when no rows yet
+        JLabel emptyLabel = new JLabel("No deliveries to manage yet");
+        emptyLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        emptyLabel.setForeground(Color.GRAY);
+        emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         DefaultTableModel tableModel = new DefaultTableModel(data, columns) {
+
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -954,7 +969,14 @@ class HomePage extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         deliveriesCard.add(deliveriesTitle, BorderLayout.NORTH);
-        deliveriesCard.add(scrollPane, BorderLayout.CENTER);
+
+        // Show placeholder when table is empty
+        if (data.length == 0) {
+            deliveriesCard.add(emptyLabel, BorderLayout.CENTER);
+        } else {
+            deliveriesCard.add(scrollPane, BorderLayout.CENTER);
+        }
+
 
         content.add(deliveriesCard);
 
@@ -975,12 +997,9 @@ class HomePage extends JFrame {
         JLabel fleetTitle = new JLabel("Fleet Tracking");
         fleetTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
 
+        // Empty contents initially
         String[] columns = {"Vehicle ID", "Driver", "Location", "Status", "Last Update"};
-        Object[][] data = {
-            {"V001", "John Doe", "Downtown", "Active", "2 mins ago"},
-            {"V002", "Sarah Smith", "North Park", "Active", "5 mins ago"},
-            {"V003", "Mike Ross", "South Side", "Inactive", "1 hour ago"}
-        };
+        Object[][] data = new Object[0][0];
 
         DefaultTableModel tableModel = new DefaultTableModel(data, columns) {
             @Override
@@ -1017,15 +1036,12 @@ class HomePage extends JFrame {
         userCard.setBackground(CARD);
         userCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JLabel userTitle = new JLabel("User Management");
+        JLabel userTitle = new JLabel("Deliverer Management");
         userTitle.setFont(new Font("SansSerif", Font.BOLD, 22));
 
+        // Empty contents initially
         String[] columns = {"User ID", "Name", "Role", "Status"};
-        Object[][] data = {
-            {"U001", "Alice Johnson", "Customer", "Active"},
-            {"U002", "Bob Smith", "Customer", "Active"},
-            {"U003", "Admin User", "Admin", "Active"}
-        };
+        Object[][] data = new Object[0][0];
 
         DefaultTableModel model = new DefaultTableModel(data, columns) {
             @Override
@@ -1050,7 +1066,7 @@ class HomePage extends JFrame {
         JPanel buttonRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonRow.setOpaque(false);
         
-        JButton deleteDriverBtn = new JButton("Delete Driver");
+        JButton deleteDriverBtn = new JButton("Delete Deliverer");
         deleteDriverBtn.setBackground(new Color(200, 50, 50));
         deleteDriverBtn.setForeground(Color.WHITE);
         deleteDriverBtn.setFocusPainted(false);
@@ -1070,7 +1086,7 @@ class HomePage extends JFrame {
             }
         });
         
-        JButton addDriverBtn = new JButton("Add Driver");
+        JButton addDriverBtn = new JButton("Add Deliverer");
         addDriverBtn.setBackground(PRIMARY);
         addDriverBtn.setForeground(Color.WHITE);
         addDriverBtn.setFocusPainted(false);
@@ -1191,7 +1207,7 @@ class HomePage extends JFrame {
             btn.addActionListener(e -> contentLayout.show(contentContainer, "MANAGE_DELIVERIES"));
         } else if (text.equals("Fleet Tracking")) {
             btn.addActionListener(e -> contentLayout.show(contentContainer, "FLEET_TRACKING"));
-        } else if (text.equals("User Management")) {
+        } else if (text.equals("Deliverer Management")) {
             btn.addActionListener(e -> contentLayout.show(contentContainer, "USER_MANAGEMENT"));
         } else if (text.equals("My Order History")) {
             btn.addActionListener(e -> contentLayout.show(contentContainer, "ORDER_HISTORY"));
