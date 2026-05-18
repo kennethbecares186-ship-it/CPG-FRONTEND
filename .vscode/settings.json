@@ -1,0 +1,9 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ],
+    "code-runner.runInTerminal": false,
+    "code-runner.executorMap": {
+        "java": "cd $dir && javac -cp \".;lib/*\" *.java && java -cp \".;lib/mysql-connector-j-9.6.0.jar\" MainCode"
+    }
+}

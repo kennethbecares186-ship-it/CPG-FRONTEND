@@ -1,6 +1,10 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.net.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -230,19 +234,63 @@ public class MainCode extends JFrame {
 
         final JCheckBox finalAdminCheck = adminCheck;
         submitBtn.addActionListener(e -> {
-            String name = userField.getText();
-            if (name.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter a username");
+            String name = userField.getText().trim();
+            String pass = new String(passField.getPassword()); // gets the password text
+            
+            if (name.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Insert your username and password!", "Credential Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // SIMULATED AUTH LOGIC
-            String role = (finalAdminCheck != null && finalAdminCheck.isSelected()) ? "ADMIN" : "CUSTOMER";
-            boolean isNewUser = type.equals("SIGNUP"); // True for signup
-            User sessionUser = new User(name, role, isNewUser);
+            // Calls DatabaseConnection to connect with MySQL
+            try (Connection connect = JDBC.getConnection()) {
+                if (connect == null) {
+                    JOptionPane.showMessageDialog(this, "Database offline! Check XAMPP.", "Connection Error", JOptionPane.ERROR_MESSAGE);
+                    return;                                     //May rename the string to "Server Down"
+                }
 
-            new HomePage(sessionUser);
-            this.dispose();
+                if (type.equals("LOGIN")) {
+                    // LOGIN LOGIC: Checks account existence in DB
+                    String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+                    PreparedStatement pstmt = connect.prepareStatement(query);
+                    pstmt.setString(1, name);
+                    pstmt.setString(2, pass);
+                    
+                    ResultSet rs = pstmt.executeQuery();
+
+                    if (rs.next()) {
+                        // SUCCESS: Creates an object User based on the data from our db
+                        String role = rs.getString("role");
+                        boolean isNew = rs.getBoolean("is_new_user");
+                        User sessionUser = new User(name, role, isNew);
+                        
+                        new HomePage(sessionUser); // OPENS DASHBOARD
+                        this.dispose();            // CLOSES LOGIN FRAME/PAGE
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Wrong username or password!", "Login Failed", JOptionPane.WARNING_MESSAGE);
+                    }
+                } else {
+                    // SIGNUP LOGIC: Saves new user to database
+                    String role = (finalAdminCheck != null && finalAdminCheck.isSelected()) ? "ADMIN" : "CUSTOMER";
+                    String query = "INSERT INTO users (username, password, role, is_new_user) VALUES (?, ?, ?, ?)";
+                    
+                    PreparedStatement pstmt = connect.prepareStatement(query);
+                    pstmt.setString(1, name);
+                    pstmt.setString(2, pass);
+                    pstmt.setString(3, role);
+                    pstmt.setBoolean(4, true);
+
+                    int rowsInserted = pstmt.executeUpdate();
+                    if (rowsInserted > 0) {
+                        JOptionPane.showMessageDialog(this, "Account Created! Login again.");
+                        cardLayout.show(mainContainer, "LOGIN_PAGE"); //Returns to login frame/page
+                    }
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "SQL Error: " + ex.getMessage());
+            }
         });
 
         return panel;
